@@ -41,3 +41,17 @@ The first extraction intentionally preserves the proven Python import path `tool
 ## CI split
 
 Standalone core CI runs without Hive installed. Hive runtime compatibility remains a separate integration concern and should be exercised against the Hive repository or an explicit Hive dependency.
+
+
+## Extraction completion
+
+Standalone tree migration completed on 2026-10-06.
+
+- source snapshot files: 167
+- target files after import: 167
+- missing paths: 0
+- extra paths: 0
+- standalone package version: 0.1.0
+- baseline CI: install, Ruff lint, selected standalone core tests, and CLI smoke all pass
+
+The Hive-era internal version 0.41.0 remains historical provenance only.
