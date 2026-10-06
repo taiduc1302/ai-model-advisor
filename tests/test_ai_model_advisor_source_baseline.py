@@ -147,7 +147,10 @@ def test_automated_openai_sources_use_fetchable_developer_docs():
         if source.get("provider") == "openai"
     }
 
-    assert set(openai_sources) == {"openai_models", "openai_model_guidance"}
+    assert {"openai_models", "openai_model_guidance"} <= set(openai_sources)
+    assert {"openai_gpt_6_astra", "openai_gpt_6_1_sol", "openai_gpt_6_luna"} <= set(
+        openai_sources
+    )
     assert all(
         str(url).startswith("https://developers.openai.com/")
         for url in openai_sources.values()
