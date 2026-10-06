@@ -14,7 +14,7 @@ The project tracks model capabilities, builds workload-aware recommendations, re
 
 This repository is extracted from the AI Model Advisor work originally developed inside `taiduc1302/hive`. The last pre-extraction development line reached internal version 0.41.0.
 
-The standalone project restarts release numbering at **0.1.0**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
+The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.2.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
 
 ## Architecture boundary
 
@@ -48,7 +48,31 @@ python -m pip install -e .
 ai-model-advisor --help
 ```
 
-The legacy module entrypoint also remains available:
+Python users should prefer the stable public package:
+
+```python
+from ai_model_advisor import Advisor, WorkloadProfile
+
+advisor = Advisor(feedback="feedback.jsonl")
+recommendations = advisor.recommend(
+    WorkloadProfile(
+        coding=4.0,
+        reasoning=4.5,
+        agentic=3.5,
+        ambiguity=4.0,
+        categories={"coding": 8},
+        activity_count=8,
+    )
+)
+```
+
+Hive is optional and explicit:
+
+```python
+from ai_model_advisor.integrations.hive import import_hive_trace
+```
+
+The legacy module entrypoint remains available during migration:
 
 ```bash
 python -m tools.ai_model_advisor.cli --help
