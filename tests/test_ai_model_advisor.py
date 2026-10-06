@@ -21,11 +21,16 @@ REGISTRY = ROOT / "tools" / "ai_model_advisor" / "registry.json"
 def test_registry_loads_current_models():
     registry = ModelRegistry(REGISTRY)
     ids = {model.model_id for model in registry.candidates()}
-    assert "gpt-6-astra" in ids
-    assert "gpt-5.6-sol" in ids
-    assert "claude-sonnet-5" in ids
-    assert "claude-opus-5" in ids
-    assert "claude-fable-5-1" in ids
+    assert {"gpt-6-astra", "gpt-6.1-sol", "gpt-6-luna"} <= ids
+    assert {"claude-sonnet-5-5", "claude-opus-5-5", "claude-fable-5-1"} <= ids
+    assert "gpt-5.6-sol" not in ids
+    assert "claude-opus-5" not in ids
+
+    historical_ids = {
+        model.model_id for model in registry.candidates(include_previous=True)
+    }
+    assert "gpt-5.6-sol" in historical_ids
+    assert "claude-opus-5" in historical_ids
 
 
 def test_simple_high_volume_work_prefers_efficient_model():
@@ -41,7 +46,7 @@ def test_simple_high_volume_work_prefers_efficient_model():
     recs = RecommendationEngine(ModelRegistry(REGISTRY)).recommend(workload, top_n=3)
     assert recs
     assert recs[0].model_id not in {"claude-fable-5-1", "gpt-6-astra"}
-    assert recs[0].effort in {"none", "low", "medium", "high"}
+    assert recs[0].effort in {"default", "none", "low", "medium", "high"}
 
 
 def test_large_anthropic_repo_audit_uses_orchestration_mode():
