@@ -68,6 +68,7 @@ class ModelRegistry:
         self,
         providers: Iterable[str] | None = None,
         include_limited: bool = False,
+        include_previous: bool = False,
     ) -> tuple[ModelProfile, ...]:
         allowed = {item.lower() for item in providers} if providers else None
         result = []
@@ -75,6 +76,8 @@ class ModelRegistry:
             if allowed and model.provider.lower() not in allowed:
                 continue
             if model.status == "limited" and not include_limited:
+                continue
+            if model.status == "previous" and not include_previous:
                 continue
             if model.status in {"retired", "deprecated"}:
                 continue
