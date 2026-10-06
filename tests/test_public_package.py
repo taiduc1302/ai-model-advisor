@@ -64,4 +64,5 @@ def test_hive_integration_is_explicit() -> None:
     import ai_model_advisor.integrations.hive as hive
 
     assert callable(hive.build_hive_config_preview)
+    assert callable(hive.evaluate_hive_experiment_preflight)
     assert callable(hive.import_hive_trace)
