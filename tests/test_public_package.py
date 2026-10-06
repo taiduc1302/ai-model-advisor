@@ -47,7 +47,7 @@ print(json.dumps({
         text=True,
     )
     payload = json.loads(completed.stdout)
-    assert payload["version"] == "0.4.0"
+    assert payload["version"] == "0.5.0"
     assert payload["registry_as_of"]
     assert payload["count"] == 2
     assert payload["hive_modules"] == []
@@ -110,3 +110,57 @@ def test_recommend_task_rejects_blank_text() -> None:
 
     with pytest.raises(ValueError, match="task must not be blank"):
         ama.Advisor().recommend_task("   ")
+
+
+def test_record_outcome_persists_and_refreshes_feedback(tmp_path) -> None:
+    import ai_model_advisor as ama
+
+    feedback_path = tmp_path / "feedback.jsonl"
+    advisor = ama.Advisor(feedback=feedback_path)
+    record = advisor.record_outcome(
+        model_id="gpt-6.1-sol",
+        effort="high",
+        execution_mode="single",
+        outcome="success",
+        task="Audit the repository and find the root cause of the failing test.",
+        task_id="repo-audit-001",
+        latency_seconds=12.5,
+        cost_usd=0.08,
+    )
+
+    assert record.provider == "openai"
+    assert record.task_category in {"debugging", "repo_review"}
+    assert feedback_path.exists()
+    assert len(advisor.feedback.records) == 1
+
+    reloaded = ama.Advisor(feedback=feedback_path)
+    assert len(reloaded.feedback.records) == 1
+    assert reloaded.feedback.records[0].task_id == "repo-audit-001"
+
+
+def test_record_outcome_can_be_in_memory_only() -> None:
+    import ai_model_advisor as ama
+
+    advisor = ama.Advisor(feedback=ama.FeedbackStore())
+    advisor.record_outcome(
+        provider="anthropic",
+        model_id="custom-model-not-in-registry",
+        effort="default",
+        execution_mode="single",
+        outcome="partial",
+        task_category="research",
+    )
+    assert len(advisor.feedback.records) == 1
+    assert advisor.feedback.records[0].provider == "anthropic"
+
+
+def test_record_outcome_requires_provider_for_unknown_model() -> None:
+    import ai_model_advisor as ama
+
+    with pytest.raises(ValueError, match="provider is required"):
+        ama.Advisor().record_outcome(
+            model_id="unknown-model",
+            effort="default",
+            execution_mode="single",
+            outcome="success",
+        )
