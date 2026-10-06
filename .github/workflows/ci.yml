@@ -16,7 +16,7 @@ jobs:
       - name: Install
         run: python -m pip install -e ".[dev]"
       - name: Ruff lint
-        run: ruff check tools/ai_model_advisor tests
+        run: ruff check src tools/ai_model_advisor tests
       - name: Standalone core tests
         run: |
           pytest -q             tests/test_ai_model_advisor.py             tests/test_ai_model_advisor_canary_evaluate.py             tests/test_ai_model_advisor_empirical_leaderboard.py             tests/test_ai_model_advisor_feedback_report.py             tests/test_ai_model_advisor_provider_api_adapter.py             tests/test_ai_model_advisor_provider_experiment_preflight.py             tests/test_ai_model_advisor_promotion_plan.py             tests/test_ai_model_advisor_routing_proposals.py             tests/test_ai_model_advisor_score_breakdown.py             tests/test_ai_model_advisor_source_baseline.py             tests/test_ai_model_advisor_telemetry_validation.py \
