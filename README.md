@@ -82,3 +82,11 @@ The Advisor is review-first. Recommendation, preflight, leaderboard, promotion p
 Source snapshot: Hive AI Model Advisor internal v0.41.0.
 
 See `MIGRATION.md` for extraction decisions and remaining cleanup.
+
+## Freshness monitoring
+
+The scheduled **Model Registry Monitor** checks only official provider sources
+once per day. It carries a source-signal baseline forward through GitHub Actions
+cache, publishes a Markdown/JSON report, and fails only when a newly observed
+unregistered model-like signal appears on a source that already has history.
+A changed webpage fingerprint alone is not treated as proof that a model changed.

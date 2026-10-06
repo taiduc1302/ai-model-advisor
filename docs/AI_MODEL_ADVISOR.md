@@ -1,6 +1,6 @@
 # AI Model Advisor
 
-`tools/ai_model_advisor` is a model watcher and workload router for Hive.
+`ai-model-advisor` is a standalone model watcher and workload router. Hive is one optional integration backend.
 
 It answers four questions separately:
 
@@ -20,7 +20,7 @@ The committed registry is a verified snapshot, not a permanent source of truth. 
 
 ## Stateful source monitoring
 
-The daily GitHub Action persists a compact fingerprint baseline in GitHub Actions cache. Each new run compares current official model/mode signals with the previous successful baseline, so `changed_sources` means an actual observed change between runs rather than simply “the page exists today.”
+The standalone `Model Registry Monitor` GitHub Action runs daily and persists a compact fingerprint baseline in GitHub Actions cache. Each new run compares current official model/mode signals with the previous successful baseline, so `changed_sources` means an actual observed change between runs rather than simply “the page exists today.”
 
 If an official source temporarily fails to load, its previous hash is preserved. A transient network failure therefore does not erase history and create a false change on the following run.
 

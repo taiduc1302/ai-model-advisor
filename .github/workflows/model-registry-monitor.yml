@@ -1,0 +1,66 @@
+name: Model Registry Monitor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 15 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Advisor
+        run: python -m pip install -e .
+
+      - name: Restore source baseline
+        uses: actions/cache@v4
+        with:
+          path: .model-advisor/source-baseline.json
+          key: ${{ runner.os }}-model-source-baseline-${{ github.run_id }}
+          restore-keys: |
+            ${{ runner.os }}-model-source-baseline-
+
+      - name: Scan official model sources
+        run: |
+          mkdir -p .model-advisor model-advisor-output
+          ai-model-advisor scan \
+            --baseline .model-advisor/source-baseline.json \
+            --write-baseline .model-advisor/source-baseline.json \
+            --output model-advisor-output/source-scan.md \
+            --json-output model-advisor-output/source-scan.json
+
+      - name: Publish source scan summary
+        run: cat model-advisor-output/source-scan.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload source scan
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-registry-monitor-${{ github.run_id }}
+          path: model-advisor-output/
+          retention-days: 30
+
+      - name: Require review for new model signals
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("model-advisor-output/source-scan.json").read_text(encoding="utf-8")
+          )
+          new_signals = report.get("new_unknown_signals") or []
+          if new_signals:
+              print("New unregistered model signals require registry review:")
+              for signal in new_signals:
+                  print(f"- {signal}")
+              raise SystemExit(2)
+          PY

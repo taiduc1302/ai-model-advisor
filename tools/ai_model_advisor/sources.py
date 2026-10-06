@@ -82,7 +82,7 @@ class ScanReport:
 def _fetch_text(url: str) -> str:
     request = urllib.request.Request(
         url,
-        headers={"User-Agent": "hive-ai-model-advisor/0.1 (+https://github.com/taiduc1302/hive)"},
+        headers={"User-Agent": "ai-model-advisor/0.4 (+https://github.com/taiduc1302/ai-model-advisor)"},
     )
     with urllib.request.urlopen(request, timeout=35) as response:
         raw = response.read().decode("utf-8", errors="replace")
