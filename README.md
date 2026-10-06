@@ -90,3 +90,31 @@ once per day. It carries a source-signal baseline forward through GitHub Actions
 cache, publishes a Markdown/JSON report, and fails only when a newly observed
 unregistered model-like signal appears on a source that already has history.
 A changed webpage fingerprint alone is not treated as proof that a model changed.
+
+
+## Personal learning without Hive
+
+The standalone API can record the outcome of real work directly:
+
+```python
+advisor = Advisor(feedback="~/.ai-model-advisor/feedback.jsonl")
+
+decision = advisor.recommend_task(
+    "Audit this repository and fix the failing CI test.",
+)
+
+advisor.record_outcome(
+    model_id=decision[0].model_id,
+    effort=decision[0].effort,
+    execution_mode=decision[0].execution_mode,
+    outcome="success",
+    task="Audit this repository and fix the failing CI test.",
+    task_id="repo-ci-001",
+    latency_seconds=42,
+    cost_usd=0.17,
+)
+```
+
+The new observation is immediately available to the same `Advisor` instance.
+Exact configuration evidence still has to meet the existing conservative sample
+thresholds before it can change routing scores.
