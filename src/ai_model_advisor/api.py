@@ -3,6 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from pathlib import Path
 
+from .decision import RoutingDecision, build_routing_decision
 from tools.ai_model_advisor.activity import ActivityAnalyzer
 from tools.ai_model_advisor.feedback import FeedbackStore, UsageRecord
 from tools.ai_model_advisor.models import ModelProfile, Recommendation, WorkloadProfile
@@ -164,3 +165,40 @@ class Advisor:
         self.feedback = FeedbackStore((*self.feedback.records, record))
         self.engine = RecommendationEngine(self.registry, self.feedback)
         return record
+
+
+    def decide_task(
+        self,
+        task: str,
+        *,
+        providers: Iterable[str] | None = None,
+        include_limited: bool = False,
+        latency_sensitivity: float = 3.0,
+        cost_sensitivity: float = 3.0,
+        fallback_score_gap: float = 6.0,
+    ) -> RoutingDecision:
+        providers_tuple = tuple(providers) if providers is not None else None
+        profile = self.profile_task(
+            task,
+            latency_sensitivity=latency_sensitivity,
+            cost_sensitivity=cost_sensitivity,
+        )
+        models = self.models(
+            providers_tuple,
+            include_limited=include_limited,
+        )
+        recommendations = self.recommend(
+            profile,
+            providers=providers_tuple,
+            include_limited=include_limited,
+            top_n=max(1, len(models)),
+        )
+        return build_routing_decision(
+            task=task,
+            profile=profile,
+            recommendations=recommendations,
+            models=models,
+            feedback=self.feedback,
+            registry_as_of=self.registry_as_of,
+            fallback_score_gap=fallback_score_gap,
+        )

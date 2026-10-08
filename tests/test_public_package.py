@@ -47,7 +47,7 @@ print(json.dumps({
         text=True,
     )
     payload = json.loads(completed.stdout)
-    assert payload["version"] == "0.5.0"
+    assert payload["version"] == "0.6.0"
     assert payload["registry_as_of"]
     assert payload["count"] == 2
     assert payload["hive_modules"] == []
@@ -163,4 +163,94 @@ def test_record_outcome_requires_provider_for_unknown_model() -> None:
             effort="default",
             execution_mode="single",
             outcome="success",
+        )
+
+
+def test_decide_task_returns_structured_routing_decision() -> None:
+    import ai_model_advisor as ama
+
+    advisor = ama.Advisor()
+    decision = advisor.decide_task(
+        "Audit the entire repository architecture, investigate unclear failures, and implement the fix.",
+        cost_sensitivity=1,
+        latency_sensitivity=1,
+        fallback_score_gap=100,
+    )
+
+    assert isinstance(decision, ama.RoutingDecision)
+    assert decision.primary.model_id
+    assert decision.registry_as_of == advisor.registry_as_of
+    assert decision.personal_evidence
+    assert decision.escalation_triggers
+    assert decision.decision_notes
+    assert decision.as_dict()["primary"]["model_id"] == decision.primary.model_id
+
+    if decision.cheaper_fallback is not None:
+        assert decision.cheaper_fallback.model_id != decision.primary.model_id
+
+
+def test_decision_surfaces_below_threshold_personal_evidence() -> None:
+    import ai_model_advisor as ama
+
+    task = "Audit the repository and find the root cause of the failing tests."
+    baseline = ama.Advisor()
+    initial = baseline.decide_task(task)
+    category = max(
+        initial.profile.categories.items(),
+        key=lambda item: (item[1], item[0]),
+    )[0]
+
+    feedback = ama.FeedbackStore(
+        [
+            ama.UsageRecord(
+                provider=initial.primary.provider,
+                model_id=initial.primary.model_id,
+                effort=initial.primary.effort,
+                execution_mode=initial.primary.execution_mode,
+                outcome="success",
+                task_category=category,
+            )
+        ]
+    )
+    decision = ama.Advisor(feedback=feedback).decide_task(task)
+
+    assert any("below the routing threshold" in item for item in decision.personal_evidence)
+
+
+def test_decision_surfaces_personal_evidence_that_changed_score() -> None:
+    import ai_model_advisor as ama
+
+    task = "Audit the repository and find the root cause of the failing tests."
+    baseline = ama.Advisor()
+    initial = baseline.decide_task(task)
+    category = max(
+        initial.profile.categories.items(),
+        key=lambda item: (item[1], item[0]),
+    )[0]
+
+    feedback = ama.FeedbackStore(
+        [
+            ama.UsageRecord(
+                provider=initial.primary.provider,
+                model_id=initial.primary.model_id,
+                effort=initial.primary.effort,
+                execution_mode=initial.primary.execution_mode,
+                outcome="success",
+                task_category=category,
+            )
+            for _ in range(4)
+        ]
+    )
+    decision = ama.Advisor(feedback=feedback).decide_task(task)
+
+    assert any("Outcome evidence affected" in item for item in decision.personal_evidence)
+
+
+def test_decide_task_rejects_negative_fallback_gap() -> None:
+    import ai_model_advisor as ama
+
+    with pytest.raises(ValueError, match="fallback_score_gap must be >= 0"):
+        ama.Advisor().decide_task(
+            "Research the latest model options.",
+            fallback_score_gap=-1,
         )
