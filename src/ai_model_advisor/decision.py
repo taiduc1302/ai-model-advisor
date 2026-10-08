@@ -222,3 +222,51 @@ def build_routing_decision(
         decision_notes=tuple(notes),
         registry_as_of=registry_as_of,
     )
+
+
+def _format_recommendation(recommendation: Recommendation | None) -> str:
+    if recommendation is None:
+        return "None"
+    return (
+        f"{recommendation.label} (`{recommendation.model_id}`) / "
+        f"{recommendation.effort} / {recommendation.execution_mode} "
+        f"— score {recommendation.score:.2f}, confidence {recommendation.confidence:.2f}"
+    )
+
+
+def routing_decision_markdown(decision: RoutingDecision) -> str:
+    lines = [
+        "# AI Model Routing Decision",
+        "",
+        f"Registry as-of: **{decision.registry_as_of}**",
+        "",
+        "## Task",
+        "",
+        decision.task,
+        "",
+        "## Primary",
+        "",
+        _format_recommendation(decision.primary),
+        "",
+        "## Cheaper fallback",
+        "",
+        _format_recommendation(decision.cheaper_fallback),
+        "",
+        "## Escalation",
+        "",
+        _format_recommendation(decision.escalation),
+        "",
+        "## Escalation triggers",
+        "",
+        *[f"- {item}" for item in decision.escalation_triggers],
+        "",
+        "## Personal evidence",
+        "",
+        *[f"- {item}" for item in decision.personal_evidence],
+        "",
+        "## Decision notes",
+        "",
+        *[f"- {item}" for item in decision.decision_notes],
+        "",
+    ]
+    return "\n".join(lines)

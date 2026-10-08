@@ -6,6 +6,7 @@ import os
 from dataclasses import asdict
 from pathlib import Path
 
+from ai_model_advisor.decision import build_routing_decision, routing_decision_markdown
 from .activity import ActivityAnalyzer
 from .empirical_leaderboard import build_empirical_leaderboard, empirical_leaderboard_markdown
 from .experiment_evaluate import evaluate_experiment_plan, experiment_evaluation_markdown
@@ -144,6 +145,46 @@ def command_recommend(args: argparse.Namespace) -> int:
             "recommendations": [item.as_dict() for item in recommendations],
         }
         _write(args.json_output, json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
+    return 0
+
+
+def command_decide(args: argparse.Namespace) -> int:
+    analyzer = ActivityAnalyzer()
+    profile = analyzer.from_texts([args.task])
+    profile.cost_sensitivity = args.cost_sensitivity
+    profile.latency_sensitivity = args.latency_sensitivity
+
+    registry = ModelRegistry(args.registry)
+    feedback = FeedbackStore.load(args.feedback)
+    models = registry.candidates(
+        providers=args.provider or None,
+        include_limited=args.include_limited,
+    )
+    recommendations = RecommendationEngine(registry, feedback).recommend(
+        profile,
+        providers=args.provider or None,
+        include_limited=args.include_limited,
+        top_n=max(1, len(models)),
+    )
+    decision = build_routing_decision(
+        task=args.task,
+        profile=profile,
+        recommendations=recommendations,
+        models=models,
+        feedback=feedback,
+        registry_as_of=registry.as_of,
+        fallback_score_gap=args.fallback_score_gap,
+    )
+
+    if args.json:
+        output = json.dumps(decision.as_dict(), ensure_ascii=False, indent=2) + "\n"
+    else:
+        output = routing_decision_markdown(decision)
+
+    if args.output:
+        _write(args.output, output)
+    else:
+        print(output, end="" if output.endswith("\n") else "\n")
     return 0
 
 
@@ -815,6 +856,32 @@ def build_parser() -> argparse.ArgumentParser:
     recommend.add_argument("--output", required=True)
     recommend.add_argument("--json-output")
     recommend.set_defaults(func=command_recommend)
+
+    decide = sub.add_parser(
+        "decide",
+        help="Choose a primary configuration, cheaper fallback, and escalation path for one task",
+    )
+    decide.add_argument("--task", required=True)
+    decide.add_argument("--registry")
+    decide.add_argument("--feedback")
+    decide.add_argument("--provider", action="append", choices=["openai", "anthropic"])
+    decide.add_argument("--include-limited", action="store_true")
+    decide.add_argument(
+        "--cost-sensitivity",
+        type=float,
+        choices=[1, 2, 3, 4, 5],
+        default=3,
+    )
+    decide.add_argument(
+        "--latency-sensitivity",
+        type=float,
+        choices=[1, 2, 3, 4, 5],
+        default=3,
+    )
+    decide.add_argument("--fallback-score-gap", type=float, default=6.0)
+    decide.add_argument("--json", action="store_true")
+    decide.add_argument("--output")
+    decide.set_defaults(func=command_decide)
 
     matrix = sub.add_parser("matrix")
     _add_activity_source_arguments(matrix)

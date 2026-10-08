@@ -14,7 +14,7 @@ The project tracks model capabilities, builds workload-aware recommendations, re
 
 This repository is extracted from the AI Model Advisor work originally developed inside `taiduc1302/hive`. The last pre-extraction development line reached internal version 0.41.0.
 
-The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.6.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
+The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.7.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
 
 ## Architecture boundary
 
@@ -147,3 +147,27 @@ Personal evidence is explicit. The decision reports whether repeated outcome or
 paired same-task efficiency evidence changed the score, whether observations
 exist but are still below threshold, or whether the decision is still driven
 entirely by registry/workload priors.
+
+
+## Decision CLI
+
+The high-level decision layer is also available directly from the terminal:
+
+```bash
+ai-model-advisor decide \
+  --task "Audit this repository, find the root cause of failing tests, and implement the fix." \
+  --cost-sensitivity 3 \
+  --latency-sensitivity 2
+```
+
+For automation, add `--json`:
+
+```bash
+ai-model-advisor decide \
+  --task "Compare current models for this coding task." \
+  --json
+```
+
+Use `--feedback path/to/feedback.jsonl` to include personal outcome evidence.
+The command prints to stdout by default; `--output path` writes the complete
+Markdown or JSON result to a file instead.
