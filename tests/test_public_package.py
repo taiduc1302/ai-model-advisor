@@ -47,7 +47,7 @@ print(json.dumps({
         text=True,
     )
     payload = json.loads(completed.stdout)
-    assert payload["version"] == "0.6.0"
+    assert payload["version"] == "0.7.0"
     assert payload["registry_as_of"]
     assert payload["count"] == 2
     assert payload["hive_modules"] == []
@@ -254,3 +254,47 @@ def test_decide_task_rejects_negative_fallback_gap() -> None:
             "Research the latest model options.",
             fallback_score_gap=-1,
         )
+
+
+def test_decide_cli_emits_json() -> None:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ai_model_advisor.cli",
+            "decide",
+            "--task",
+            "Audit this repository, investigate the failing tests, and implement the fix.",
+            "--json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    payload = json.loads(completed.stdout)
+    assert payload["primary"]["model_id"]
+    assert "cheaper_fallback" in payload
+    assert "escalation" in payload
+    assert payload["escalation_triggers"]
+    assert payload["personal_evidence"]
+
+
+def test_decide_cli_emits_human_report() -> None:
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ai_model_advisor.cli",
+            "decide",
+            "--task",
+            "Research and compare current AI models for a complex coding workflow.",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    assert "# AI Model Routing Decision" in completed.stdout
+    assert "## Primary" in completed.stdout
+    assert "## Cheaper fallback" in completed.stdout
+    assert "## Escalation" in completed.stdout
+    assert "## Personal evidence" in completed.stdout
