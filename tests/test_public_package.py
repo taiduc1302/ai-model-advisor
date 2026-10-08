@@ -47,7 +47,7 @@ print(json.dumps({
         text=True,
     )
     payload = json.loads(completed.stdout)
-    assert payload["version"] == "0.7.0"
+    assert payload["version"] == "0.8.0"
     assert payload["registry_as_of"]
     assert payload["count"] == 2
     assert payload["hive_modules"] == []
@@ -298,3 +298,94 @@ def test_decide_cli_emits_human_report() -> None:
     assert "## Cheaper fallback" in completed.stdout
     assert "## Escalation" in completed.stdout
     assert "## Personal evidence" in completed.stdout
+
+
+def test_record_decision_cli_closes_feedback_loop(tmp_path) -> None:
+    decision_path = tmp_path / "decision.json"
+    feedback_path = tmp_path / "feedback.jsonl"
+
+    subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ai_model_advisor.cli",
+            "decide",
+            "--task",
+            "Audit this repository, investigate failing tests, and implement the fix.",
+            "--json",
+            "--output",
+            str(decision_path),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ai_model_advisor.cli",
+            "record-decision",
+            "--decision",
+            str(decision_path),
+            "--feedback",
+            str(feedback_path),
+            "--outcome",
+            "success",
+            "--task-id",
+            "repo-fix-001",
+            "--latency-seconds",
+            "31.5",
+            "--cost-usd",
+            "0.12",
+            "--json",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    result = json.loads(completed.stdout)
+    decision = json.loads(decision_path.read_text(encoding="utf-8"))
+    records = [
+        json.loads(line)
+        for line in feedback_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+    assert result["recorded"] is True
+    assert len(records) == 1
+    assert records[0]["model_id"] == decision["primary"]["model_id"]
+    assert records[0]["effort"] == decision["primary"]["effort"]
+    assert records[0]["execution_mode"] == decision["primary"]["execution_mode"]
+    assert records[0]["outcome"] == "success"
+    assert records[0]["task_id"] == "repo-fix-001"
+    assert records[0]["task_category"]
+
+
+def test_record_decision_cli_rejects_malformed_decision(tmp_path) -> None:
+    decision_path = tmp_path / "decision.json"
+    feedback_path = tmp_path / "feedback.jsonl"
+    decision_path.write_text('{"primary": {"model_id": "missing-fields"}}', encoding="utf-8")
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "ai_model_advisor.cli",
+            "record-decision",
+            "--decision",
+            str(decision_path),
+            "--feedback",
+            str(feedback_path),
+            "--outcome",
+            "success",
+        ],
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode != 0
+    assert "missing required fields" in completed.stderr
+    assert not feedback_path.exists()

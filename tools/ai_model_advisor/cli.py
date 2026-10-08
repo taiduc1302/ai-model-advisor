@@ -292,6 +292,108 @@ def command_experiment_impact(args: argparse.Namespace) -> int:
     return 0
 
 
+def _decision_primary_record(
+    decision_path: str | Path,
+    *,
+    outcome: str,
+    retries: int,
+    latency_seconds: float | None,
+    cost_usd: float | None,
+    input_tokens: int | None,
+    output_tokens: int | None,
+    task_id: str | None,
+    task_category: str | None,
+    note: str,
+) -> UsageRecord:
+    payload = json.loads(Path(decision_path).read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("decision JSON root must be an object")
+
+    primary = payload.get("primary")
+    if not isinstance(primary, dict):
+        raise ValueError("decision JSON must contain a primary object")
+
+    required = ("provider", "model_id", "effort", "execution_mode")
+    missing = [key for key in required if not primary.get(key)]
+    if missing:
+        raise ValueError(
+            "decision primary is missing required fields: " + ", ".join(missing)
+        )
+
+    resolved_category = task_category
+    if resolved_category is None:
+        profile = payload.get("profile")
+        categories = profile.get("categories") if isinstance(profile, dict) else None
+        if isinstance(categories, dict) and categories:
+            valid = [
+                (str(key), int(value))
+                for key, value in categories.items()
+                if isinstance(value, int)
+            ]
+            if valid:
+                resolved_category = max(
+                    valid,
+                    key=lambda item: (item[1], item[0]),
+                )[0]
+
+    return UsageRecord(
+        provider=str(primary["provider"]),
+        model_id=str(primary["model_id"]),
+        effort=str(primary["effort"]),
+        execution_mode=str(primary["execution_mode"]),
+        outcome=outcome,
+        retries=retries,
+        latency_seconds=latency_seconds,
+        cost_usd=cost_usd,
+        input_tokens=input_tokens,
+        output_tokens=output_tokens,
+        task_category=resolved_category,
+        task_id=task_id,
+        note=note,
+    )
+
+
+def command_record_decision(args: argparse.Namespace) -> int:
+    record = _decision_primary_record(
+        args.decision,
+        outcome=args.outcome,
+        retries=args.retries,
+        latency_seconds=args.latency_seconds,
+        cost_usd=args.cost_usd,
+        input_tokens=args.input_tokens,
+        output_tokens=args.output_tokens,
+        task_id=args.task_id,
+        task_category=args.task_category,
+        note=args.note or "",
+    )
+    FeedbackStore.append(args.feedback, record)
+
+    payload = {
+        "recorded": True,
+        "feedback": str(args.feedback),
+        "record": record.as_dict(),
+    }
+    if args.json:
+        output = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
+    else:
+        category = record.task_category or "unscoped"
+        output = (
+            "# Decision outcome recorded\n\n"
+            f"- Model: `{record.model_id}`\n"
+            f"- Effort: **{record.effort}**\n"
+            f"- Execution: **{record.execution_mode}**\n"
+            f"- Outcome: **{record.outcome}**\n"
+            f"- Category: **{category}**\n"
+            f"- Feedback store: `{args.feedback}`\n"
+        )
+
+    if args.output:
+        _write(args.output, output)
+    else:
+        print(output, end="" if output.endswith("\n") else "\n")
+    return 0
+
+
 def command_feedback_add(args: argparse.Namespace) -> int:
     record = UsageRecord(
         provider=args.provider,
@@ -947,6 +1049,29 @@ def build_parser() -> argparse.ArgumentParser:
     experiment_impact.add_argument("--output", required=True)
     experiment_impact.add_argument("--json-output")
     experiment_impact.set_defaults(func=command_experiment_impact)
+
+    record_decision = sub.add_parser(
+        "record-decision",
+        help="Record the real outcome of the primary configuration from a saved decision JSON",
+    )
+    record_decision.add_argument("--decision", required=True)
+    record_decision.add_argument("--feedback", required=True)
+    record_decision.add_argument(
+        "--outcome",
+        required=True,
+        choices=["success", "partial", "failure"],
+    )
+    record_decision.add_argument("--retries", type=int, default=0)
+    record_decision.add_argument("--latency-seconds", type=float)
+    record_decision.add_argument("--cost-usd", type=float)
+    record_decision.add_argument("--input-tokens", type=int)
+    record_decision.add_argument("--output-tokens", type=int)
+    record_decision.add_argument("--task-id")
+    record_decision.add_argument("--task-category")
+    record_decision.add_argument("--note")
+    record_decision.add_argument("--json", action="store_true")
+    record_decision.add_argument("--output")
+    record_decision.set_defaults(func=command_record_decision)
 
     feedback = sub.add_parser("feedback-add")
     feedback.add_argument("--feedback", required=True)

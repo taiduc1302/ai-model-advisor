@@ -14,7 +14,7 @@ The project tracks model capabilities, builds workload-aware recommendations, re
 
 This repository is extracted from the AI Model Advisor work originally developed inside `taiduc1302/hive`. The last pre-extraction development line reached internal version 0.41.0.
 
-The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.7.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
+The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.8.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
 
 ## Architecture boundary
 
@@ -171,3 +171,29 @@ ai-model-advisor decide \
 Use `--feedback path/to/feedback.jsonl` to include personal outcome evidence.
 The command prints to stdout by default; `--output path` writes the complete
 Markdown or JSON result to a file instead.
+
+
+## Close the decision-feedback loop
+
+Save a JSON decision, run the work, then record the actual result without
+retyping the selected configuration:
+
+```bash
+ai-model-advisor decide \
+  --task "Audit this repository and fix the failing tests." \
+  --json \
+  --output decision.json
+
+# Run the recommended configuration, then record what actually happened:
+ai-model-advisor record-decision \
+  --decision decision.json \
+  --feedback ~/.ai-model-advisor/feedback.jsonl \
+  --outcome success \
+  --task-id repo-fix-001 \
+  --latency-seconds 42 \
+  --cost-usd 0.17
+```
+
+`record-decision` records the Primary model, effort, and execution mode exactly
+as emitted by the saved decision. It also reuses the dominant task category
+from the decision profile unless `--task-category` is supplied explicitly.
