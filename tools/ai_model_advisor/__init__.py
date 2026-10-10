@@ -123,7 +123,7 @@ __all__ = [
     "verify_hive_promotion_checkpoint",
 ]
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 
 
 def __getattr__(name: str) -> Any:

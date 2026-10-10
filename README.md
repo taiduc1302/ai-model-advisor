@@ -14,7 +14,7 @@ The project tracks model capabilities, builds workload-aware recommendations, re
 
 This repository is extracted from the AI Model Advisor work originally developed inside `taiduc1302/hive`. The last pre-extraction development line reached internal version 0.41.0.
 
-The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.9.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
+The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.10.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
 
 ## Architecture boundary
 
@@ -197,3 +197,4 @@ ai-model-advisor record-decision \
 `record-decision` records the Primary model, effort, and execution mode exactly
 as emitted by the saved decision. It also reuses the dominant task category
 from the decision profile unless `--task-category` is supplied explicitly.
+\n## Offline task evaluation\n\nRun `python -m ai_model_advisor.evaluation` for curated task-profile expectations. This is not empirical model performance measurement. See `docs/EVALUATION_PROTOCOL.md`.\n
