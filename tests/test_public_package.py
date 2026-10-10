@@ -47,7 +47,7 @@ print(json.dumps({
         text=True,
     )
     payload = json.loads(completed.stdout)
-    assert payload["version"] == "0.8.0"
+    assert payload["version"] == "0.9.0"
     assert payload["registry_as_of"]
     assert payload["count"] == 2
     assert payload["hive_modules"] == []
@@ -389,3 +389,55 @@ def test_record_decision_cli_rejects_malformed_decision(tmp_path) -> None:
     assert completed.returncode != 0
     assert "missing required fields" in completed.stderr
     assert not feedback_path.exists()
+
+def test_simple_and_complex_tasks_are_distinct() -> None:
+    import ai_model_advisor as ama
+
+    advisor = ama.Advisor()
+    tiny = advisor.profile_task("Fix a typo in one file.")
+    complex_task = advisor.profile_task(
+        "Audit the entire repository architecture, investigate an unknown root cause "
+        "across many modules, implement the fix, run the tests, and verify every result."
+    )
+    assert tiny.reasoning < 2
+    assert tiny.agentic < 2
+    assert tiny.breadth < 2
+    assert tiny.parallelism < 2
+    assert complex_task.coding >= 4
+    assert complex_task.reasoning >= 4
+    assert complex_task.breadth >= 4
+    assert complex_task.agentic >= 3
+    assert complex_task.parallelism >= 2.5
+
+
+def test_profiler_ignores_negated_research() -> None:
+    import ai_model_advisor as ama
+
+    profile = ama.Advisor().profile_task(
+        "Fix a typo in one file. Do not research or compare anything."
+    )
+    assert "research" not in profile.categories
+    assert profile.breadth < 2
+
+
+def test_profiler_reports_weighted_signals() -> None:
+    import ai_model_advisor as ama
+
+    profile = ama.Advisor().profile_task(
+        "Compare multiple official sources, investigate the trade-offs, and verify results."
+    )
+    assert profile.reasoning > profile.coding
+    assert "research" in profile.categories
+    assert profile.category_signals["research"]
+    assert profile.dimension_signals["reasoning"]
+
+
+def test_profiler_detects_multi_step_agentic_execution() -> None:
+    import ai_model_advisor as ama
+
+    profile = ama.Advisor().profile_task(
+        "Build the feature, run the tests, fix failures, verify the output, "
+        "and create a pull request."
+    )
+    assert profile.agentic >= 3
+    assert "three-or-more requested actions" in profile.dimension_signals["agentic"]
