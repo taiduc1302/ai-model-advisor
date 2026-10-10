@@ -163,9 +163,10 @@ DIMENSION_RULES: dict[str, tuple[tuple[str, float, str], ...]] = {
         (r"\bmulti[- ]repo\b", 1.2, "multi-repository scope"),
     ),
     "parallelism": (
-        (r"\bin parallel\b", 1.2, "explicit parallel work"),
+        (r"\bin parallel\b", 2.2, "explicit parallel work"),
         (r"\bindependent(?:ly)?\b", 0.7, "independent workstreams"),
-        (r"\b(multiple|many)\s+(?:files|modules|services|sources|options)\b", 0.8, "parallelizable components"),
+        (r"\b(hundreds?|dozens?)\s+(?:of\s+)?(?:files|modules)\b", 1.0, "large parallelizable codebase"),
+        (r"\b(multiple|many)\s+(?:files|modules|services|sources|options)\b", 1.3, "parallelizable components"),
         (r"\bacross\s+(?:the\s+)?(?:repo|repository|codebase|modules|services|sources)\b", 0.8, "cross-component work"),
         (r"\b(compare|benchmark)\s+(?:multiple|several|many|different)\b", 0.7, "parallel comparison"),
     ),
