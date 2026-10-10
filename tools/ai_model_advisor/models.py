@@ -40,6 +40,8 @@ class WorkloadProfile:
     categories: dict[str, int] = field(default_factory=dict)
     activity_count: int = 0
     evidence: list[str] = field(default_factory=list)
+    category_signals: dict[str, list[str]] = field(default_factory=dict)
+    dimension_signals: dict[str, list[str]] = field(default_factory=dict)
 
     def as_dict(self) -> dict[str, Any]:
         return asdict(self)
