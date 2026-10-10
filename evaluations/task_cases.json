@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "description": "Curated expectation checks, not empirical model performance benchmarks.",
+  "cases": [
+    {
+      "id": "tiny_typo",
+      "task": "Fix a typo in one file.",
+      "expect": {
+        "coding_min": 1.1,
+        "reasoning_max": 2,
+        "agentic_max": 2,
+        "breadth_max": 2,
+        "parallelism_max": 2
+      }
+    },
+    {
+      "id": "repository_audit",
+      "task": "Audit the entire repository architecture, investigate an unknown root cause across many modules, implement the fix, run the tests, and verify every result.",
+      "expect": {
+        "coding_min": 3,
+        "reasoning_min": 3,
+        "agentic_min": 2.5,
+        "breadth_min": 3,
+        "ambiguity_min": 2
+      }
+    },
+    {
+      "id": "explicit_parallel",
+      "task": "Audit hundreds of files across multiple modules in parallel and verify all results.",
+      "expect": {
+        "breadth_min": 3,
+        "parallelism_min": 3
+      }
+    },
+    {
+      "id": "negated_research",
+      "task": "Fix a typo in one file. Do not research or compare anything.",
+      "expect": {
+        "forbidden_categories": [
+          "research"
+        ],
+        "breadth_max": 2
+      }
+    },
+    {
+      "id": "research",
+      "task": "Compare multiple official sources, investigate trade-offs, and verify conclusions.",
+      "expect": {
+        "required_categories": [
+          "research"
+        ],
+        "reasoning_min": 2
+      }
+    },
+    {
+      "id": "agentic_delivery",
+      "task": "Build the feature, run the tests, fix failures, verify output, and create a pull request.",
+      "expect": {
+        "agentic_min": 3,
+        "required_categories": [
+          "implementation"
+        ]
+      }
+    },
+    {
+      "id": "spreadsheet",
+      "task": "Analyze an Excel spreadsheet, reconcile quantities and estimate totals.",
+      "expect": {
+        "required_categories": [
+          "spreadsheets"
+        ],
+        "reasoning_min": 2
+      }
+    },
+    {
+      "id": "doc",
+      "task": "Write an email proposal.",
+      "expect": {
+        "required_categories": [
+          "documents"
+        ],
+        "coding_max": 2
+      }
+    },
+    {
+      "id": "multi_stage",
+      "task": "Implement the endpoint, update tests, investigate a regression, and deploy the fix.",
+      "expect": {
+        "coding_min": 2,
+        "agentic_min": 2
+      }
+    },
+    {
+      "id": "unknown_reason",
+      "task": "Investigate the unknown root cause and explain why the system failed.",
+      "expect": {
+        "ambiguity_min": 2,
+        "reasoning_min": 2
+      }
+    }
+  ]
+}

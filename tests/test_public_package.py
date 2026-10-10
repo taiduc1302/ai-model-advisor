@@ -47,7 +47,7 @@ print(json.dumps({
         text=True,
     )
     payload = json.loads(completed.stdout)
-    assert payload["version"] == "0.9.0"
+    assert payload["version"] == "0.10.0"
     assert payload["registry_as_of"]
     assert payload["count"] == 2
     assert payload["hive_modules"] == []
