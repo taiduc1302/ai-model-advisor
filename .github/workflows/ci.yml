@@ -25,5 +25,7 @@ jobs:
         run: |
           python -m ai_model_advisor.evaluation --json-output evaluation-results.json
           pytest -q tests/test_task_evaluation.py
+      - name: Matched task outcome evaluation
+        run: pytest -q tests/test_paired_evaluation.py
       - name: CLI smoke
         run: ai-model-advisor --help
