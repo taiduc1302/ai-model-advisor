@@ -4,7 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 from collections import defaultdict
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 from statistics import median
 
@@ -60,15 +60,15 @@ def evaluate_pair(
     excluded_ambiguous = 0
     excluded_unpaired = 0
     for task_id, configurations in sorted(grouped.items()):
-        l = configurations.get(left, [])
-        r = configurations.get(right, [])
-        if len(l) != 1 or len(r) != 1:
-            if len(l) > 1 or len(r) > 1:
+        left_records = configurations.get(left, [])
+        right_records = configurations.get(right, [])
+        if len(left_records) != 1 or len(right_records) != 1:
+            if len(left_records) > 1 or len(right_records) > 1:
                 excluded_ambiguous += 1
             else:
                 excluded_unpaired += 1
             continue
-        matched.append(MatchedTask(task_id, category, l[0], r[0]))
+        matched.append(MatchedTask(task_id, category, left_records[0], right_records[0]))
 
     def side(records: list[UsageRecord]) -> dict[str, object]:
         costs = [record.cost_usd for record in records if record.cost_usd is not None]
