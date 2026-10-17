@@ -198,3 +198,6 @@ ai-model-advisor record-decision \
 as emitted by the saved decision. It also reuses the dominant task category
 from the decision profile unless `--task-category` is supplied explicitly.
 \n## Offline task evaluation\n\nRun `python -m ai_model_advisor.evaluation` for curated task-profile expectations. This is not empirical model performance measurement. See `docs/EVALUATION_PROTOCOL.md`.\n
+## Controlled experiments
+
+Freeze and validate a counterbalanced experiment before collecting real provider results. See [Controlled Experiment Protocol](docs/CONTROLLED_EXPERIMENT_PROTOCOL.md). No automatic model execution or routing promotion.
