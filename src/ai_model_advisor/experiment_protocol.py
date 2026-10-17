@@ -8,7 +8,7 @@ import argparse
 import hashlib
 import json
 import re
-from collections import Counter, defaultdict
+from collections import defaultdict
 from pathlib import Path
 from statistics import median
 from typing import Any
