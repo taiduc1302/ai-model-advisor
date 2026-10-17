@@ -29,5 +29,7 @@ jobs:
         run: pytest -q tests/test_paired_evaluation.py
       - name: Held-out policy replay tests
         run: pytest -q tests/test_policy_replay.py
+      - name: Controlled experiment protocol tests
+        run: pytest -q tests/test_experiment_protocol.py
       - name: CLI smoke
         run: ai-model-advisor --help
