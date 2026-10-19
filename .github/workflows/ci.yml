@@ -31,5 +31,7 @@ jobs:
         run: pytest -q tests/test_policy_replay.py
       - name: Controlled experiment protocol tests
         run: pytest -q tests/test_experiment_protocol.py
+      - name: Benchmark runner offline regression tests
+        run: pytest -q tests/test_benchmark_runner.py
       - name: CLI smoke
         run: ai-model-advisor --help
