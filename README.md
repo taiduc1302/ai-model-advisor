@@ -201,3 +201,7 @@ from the decision profile unless `--task-category` is supplied explicitly.
 ## Controlled experiments
 
 Freeze and validate a counterbalanced experiment before collecting real provider results. See [Controlled Experiment Protocol](docs/CONTROLLED_EXPERIMENT_PROTOCOL.md). No automatic model execution or routing promotion.
+
+## Safe opt-in provider benchmarking
+
+Preview one frozen experiment run using `python -m ai_model_advisor.benchmark_runner`. Add `--apply` only to authorize one provider call. See [Benchmark Runner](docs/BENCHMARK_RUNNER.md). The list-price estimate is **not** a guaranteed spending cap; CI never makes paid calls.

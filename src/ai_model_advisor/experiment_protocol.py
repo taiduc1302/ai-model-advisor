@@ -163,6 +163,7 @@ def _paired_metrics(pairs: list[tuple[dict[str, Any], dict[str, Any]]]) -> dict[
             if a.get(field) is not None and b.get(field) is not None
         ]
     cost = deltas("cost_usd")
+    estimated_cost = deltas("estimated_cost_usd")
     latency = deltas("latency_seconds")
     retries = deltas("retries")
     return {
@@ -171,6 +172,10 @@ def _paired_metrics(pairs: list[tuple[dict[str, Any], dict[str, Any]]]) -> dict[
         if quality else None,
         "candidate_B_minus_A_median_cost_usd": median(cost) if cost else None,
         "paired_cost_count": len(cost),
+        "candidate_B_minus_A_median_estimated_cost_usd": (
+            median(estimated_cost) if estimated_cost else None
+        ),
+        "paired_estimated_cost_count": len(estimated_cost),
         "candidate_B_minus_A_median_latency_seconds": median(latency) if latency else None,
         "paired_latency_count": len(latency),
         "candidate_B_minus_A_median_retries": median(retries) if retries else None,
@@ -194,7 +199,7 @@ def evaluate_plan(
         _keys(
             row,
             required=set(RUN_FIELDS) | {"outcome"},
-            optional=set(METRIC_FIELDS) | {"note"},
+            optional=set(METRIC_FIELDS) | {"note", "estimated_cost_usd"},
             label="outcome record",
         )
         run_id = row["run_id"]
@@ -216,6 +221,8 @@ def evaluate_plan(
                 _positive_metric(value, field, allow_zero=field != "latency_seconds")
                 if field in ("retries", "input_tokens", "output_tokens") and type(value) is not int:
                     raise ValueError(f"{field} must be an integer")
+        if row.get("estimated_cost_usd") is not None:
+            _positive_metric(row["estimated_cost_usd"], "estimated_cost_usd", allow_zero=True)
         if "note" in row and not isinstance(row["note"], str):
             raise ValueError("note must be a string")
         observed[run_id] = row
@@ -262,6 +269,7 @@ def evaluate_plan(
             "A review_ready status is not statistical significance or permission to promote a model.",
             "Quality depends on an independently verified evaluator and truthful recorded outcomes.",
             "Missing pairs and missing cost/latency are not imputed.",
+            "Estimated cost uses registry list prices, not provider invoice totals.",
         ],
     }
 
