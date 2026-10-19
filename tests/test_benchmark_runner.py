@@ -202,3 +202,68 @@ def test_cli_dry_run_requires_no_credentials(tmp_path, monkeypatch):
     ], capture_output=True, text=True, check=True)
     assert json.loads(proc.stdout)["requires_explicit_apply"] is True
     assert not (tmp_path / "results.jsonl").exists()
+
+
+def test_anthropic_default_effort_single_run(tmp_path, monkeypatch):
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "anthropic-secret-test")
+    initial, tasks, oracle = setup()
+    config = dict(initial["spec"])
+    config["arms"]["B"] = {
+        "provider": "anthropic",
+        "model_id": "claude-haiku-4-5-20251001",
+        "effort": "default",
+        "execution_mode": "single",
+    }
+    plan = make_plan(config)
+    first_b = next(
+        run for run in plan["runs"]
+        if run["arm"] == "B" and run["order"] == 1
+    )
+    calls = []
+
+    def fake_anthropic(request, timeout):
+        calls.append(request)
+        return {
+            "model": request.configuration["model_id"],
+            "stop_reason": "end_turn",
+            "content": [{"type": "text", "text": "42"}],
+            "usage": {"input_tokens": 9, "output_tokens": 3},
+        }
+
+    path = tmp_path / "anthropic.jsonl"
+    result = run_one(
+        plan, tasks, oracle, ModelRegistry(),
+        run_id=first_b["run_id"], observations_path=path,
+        max_cost_usd=1.0, max_output_tokens=48,
+        transport=fake_anthropic,
+    )
+    assert result["outcome"] == "success"
+    assert len(calls) == 1
+    assert calls[0].body["max_tokens"] == 48
+    assert "output_config" not in calls[0].body
+    assert "anthropic-secret-test" not in path.read_text(encoding="utf-8")
+    assert json.loads(path.read_text(encoding="utf-8"))["provider"] == "anthropic"
+
+
+def test_unfinished_openai_response_requires_manual_review(tmp_path, monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "fake")
+    plan, tasks, oracle = setup()
+    path = tmp_path / "unfinished.jsonl"
+
+    def unfinished(request, timeout):
+        return {
+            "status": "in_progress",
+            "model": request.configuration["model_id"],
+            "output_text": "42",
+            "usage": {"input_tokens": 10, "output_tokens": 2},
+        }
+
+    with pytest.raises(BenchmarkRunnerError, match="not completed"):
+        run_one(
+            plan, tasks, oracle, ModelRegistry(),
+            run_id=plan["runs"][0]["run_id"],
+            observations_path=path, max_cost_usd=1.0,
+            transport=unfinished,
+        )
+    assert not path.exists()
+    assert path.with_name(path.name + ".attempts.jsonl").exists()
