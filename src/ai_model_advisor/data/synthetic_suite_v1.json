@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "dataset_name": "synthetic-objective-v1",
+  "description": "Public synthetic tasks with deterministic JSON oracles. Not an independent blind or real-world benchmark.",
+  "tasks": [
+    {
+      "id": "arith-001",
+      "split": "train",
+      "category": "arithmetic",
+      "prompt": "Compute ((47 * 18) - 96) / 6. Reply with only a JSON object containing numeric key result.",
+      "expected": {
+        "result": 125
+      }
+    },
+    {
+      "id": "arith-002",
+      "split": "holdout",
+      "category": "arithmetic",
+      "prompt": "Compute 159 * 17 - 628. Reply with only a JSON object containing numeric key result.",
+      "expected": {
+        "result": 2075
+      }
+    },
+    {
+      "id": "arith-003",
+      "split": "holdout",
+      "category": "arithmetic",
+      "prompt": "Compute 2 * (314 - 87) + 3 * 52. Reply with only a JSON object containing numeric key result.",
+      "expected": {
+        "result": 610
+      }
+    },
+    {
+      "id": "arith-004",
+      "split": "holdout",
+      "category": "arithmetic",
+      "prompt": "Compute (999 - 187) / 7. Reply with only a JSON object containing numeric key result.",
+      "expected": {
+        "result": 116
+      }
+    },
+    {
+      "id": "arith-005",
+      "split": "holdout",
+      "category": "arithmetic",
+      "prompt": "Compute 87 * 24 + 16. Reply with only a JSON object containing numeric key result.",
+      "expected": {
+        "result": 2104
+      }
+    },
+    {
+      "id": "code-001",
+      "split": "train",
+      "category": "code_reasoning",
+      "prompt": "Evaluate Python: values = [1, 2, 3]; result = [v * 2 for v in values]. Return only JSON with key result holding the final list.",
+      "expected": {
+        "result": [
+          2,
+          4,
+          6
+        ]
+      }
+    },
+    {
+      "id": "code-002",
+      "split": "holdout",
+      "category": "code_reasoning",
+      "prompt": "Evaluate Python: values = [3, 1, 3, 2]; result = sorted(set(values)). Return only JSON with key result holding the final list.",
+      "expected": {
+        "result": [
+          1,
+          2,
+          3
+        ]
+      }
+    },
+    {
+      "id": "code-003",
+      "split": "holdout",
+      "category": "code_reasoning",
+      "prompt": "Evaluate Python: result = sum(i for i in range(10) if i % 3 == 0). Return only JSON with numeric key result.",
+      "expected": {
+        "result": 18
+      }
+    },
+    {
+      "id": "code-004",
+      "split": "holdout",
+      "category": "code_reasoning",
+      "prompt": "Evaluate JavaScript: const x = [1, 2, 3, 4]; const result = x.filter(n => n % 2 === 0).map(n => n * n); Return only JSON with key result holding the final array.",
+      "expected": {
+        "result": [
+          4,
+          16
+        ]
+      }
+    },
+    {
+      "id": "code-005",
+      "split": "holdout",
+      "category": "code_reasoning",
+      "prompt": "Evaluate Python: d = {'a': 2, 'b': 4}; d['a'] += d['b']; result = d['a']. Return only JSON with numeric key result.",
+      "expected": {
+        "result": 6
+      }
+    },
+    {
+      "id": "data-001",
+      "split": "train",
+      "category": "structured_data",
+      "prompt": "Given CSV rows item,qty,price: A,3,4 and B,2,5. Return only JSON with numeric key total equal to sum(qty * price).",
+      "expected": {
+        "total": 22
+      }
+    },
+    {
+      "id": "data-002",
+      "split": "holdout",
+      "category": "structured_data",
+      "prompt": "Invoice lines: A has quantity 2 and unit price 12.50; B has quantity 3 and unit price 4.00. Return only JSON with string key total formatted to two decimal places.",
+      "expected": {
+        "total": "37.00"
+      }
+    },
+    {
+      "id": "data-003",
+      "split": "holdout",
+      "category": "structured_data",
+      "prompt": "Records: [{'team':'A','hours':7},{'team':'B','hours':5},{'team':'A','hours':4}]. Sum hours for team A. Return only JSON with numeric key total_hours.",
+      "expected": {
+        "total_hours": 11
+      }
+    },
+    {
+      "id": "data-004",
+      "split": "holdout",
+      "category": "structured_data",
+      "prompt": "CSV table (id,qty): (1,2), (2,5), (3,2). Return only JSON with key ids containing ascending numeric IDs where qty >= 3.",
+      "expected": {
+        "ids": [
+          2
+        ]
+      }
+    },
+    {
+      "id": "data-005",
+      "split": "holdout",
+      "category": "structured_data",
+      "prompt": "Orders: #11 amount 45 approved; #12 amount 15 draft; #13 amount 55 approved. Return only JSON with numeric key approved_total.",
+      "expected": {
+        "approved_total": 100
+      }
+    },
+    {
+      "id": "extract-001",
+      "split": "train",
+      "category": "text_extraction",
+      "prompt": "From 'Shipment ref: BX-204; ETA: 2026-11-05', return only JSON with string keys reference and date.",
+      "expected": {
+        "reference": "BX-204",
+        "date": "2026-11-05"
+      }
+    },
+    {
+      "id": "extract-002",
+      "split": "holdout",
+      "category": "text_extraction",
+      "prompt": "From 'Case ID ZQ-19. Priority: P2. Owner: Sam.', return only JSON with string keys case_id and priority. Do not include owner.",
+      "expected": {
+        "case_id": "ZQ-19",
+        "priority": "P2"
+      }
+    },
+    {
+      "id": "extract-003",
+      "split": "holdout",
+      "category": "text_extraction",
+      "prompt": "From 'Site: North Lot; Width: 6.5 m; Length: 8.0 m', return only JSON with numeric keys width_m and length_m.",
+      "expected": {
+        "width_m": 6.5,
+        "length_m": 8
+      }
+    },
+    {
+      "id": "extract-004",
+      "split": "holdout",
+      "category": "text_extraction",
+      "prompt": "From 'Payment terms: NET 30; Currency: CAD; Invoice: 771', return only JSON with string keys terms and currency.",
+      "expected": {
+        "terms": "NET 30",
+        "currency": "CAD"
+      }
+    },
+    {
+      "id": "extract-005",
+      "split": "holdout",
+      "category": "text_extraction",
+      "prompt": "From 'Ticket #845; Status: closed; Resolved: 2026-12-02', return only JSON with numeric key ticket and string key status.",
+      "expected": {
+        "ticket": 845,
+        "status": "closed"
+      }
+    }
+  ]
+}
