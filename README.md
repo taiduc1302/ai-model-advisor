@@ -14,7 +14,7 @@ The project tracks model capabilities, builds workload-aware recommendations, re
 
 This repository is extracted from the AI Model Advisor work originally developed inside `taiduc1302/hive`. The last pre-extraction development line reached internal version 0.41.0.
 
-The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.10.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
+The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.15.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
 
 ## Architecture boundary
 
@@ -205,3 +205,7 @@ Freeze and validate a counterbalanced experiment before collecting real provider
 ## Safe opt-in provider benchmarking
 
 Preview one frozen experiment run using `python -m ai_model_advisor.benchmark_runner`. Add `--apply` only to authorize one provider call. See [Benchmark Runner](docs/BENCHMARK_RUNNER.md). The list-price estimate is **not** a guaranteed spending cap; CI never makes paid calls.
+
+## Synthetic benchmark suite (v0.15)
+
+Generate a frozen 20-task, four-category public benchmark with `python -m ai_model_advisor.benchmark_suite build --help`. Includes four training examples and sixteen deterministic JSON holdout tasks. No API calls are made by building or validating the bundle. These are synthetic, public checks rather than blind empirical model-quality benchmarks. See [Benchmark Suite](docs/BENCHMARK_SUITE.md).
