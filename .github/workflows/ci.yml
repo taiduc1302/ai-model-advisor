@@ -35,5 +35,7 @@ jobs:
         run: pytest -q tests/test_benchmark_runner.py
       - name: Synthetic benchmark suite offline tests
         run: pytest -q tests/test_benchmark_suite.py
+      - name: Benchmark analysis regression tests
+        run: pytest -q tests/test_benchmark_analysis.py
       - name: CLI smoke
         run: ai-model-advisor --help
