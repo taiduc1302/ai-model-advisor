@@ -14,7 +14,7 @@ The project tracks model capabilities, builds workload-aware recommendations, re
 
 This repository is extracted from the AI Model Advisor work originally developed inside `taiduc1302/hive`. The last pre-extraction development line reached internal version 0.41.0.
 
-The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.15.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
+The standalone project restarts release numbering at **0.1.0**; the current standalone package line is **0.17.x**. The old 0.41 number describes the internal Hive-era iteration history, not a public standalone release.
 
 ## Architecture boundary
 
@@ -213,3 +213,7 @@ Generate a frozen 20-task, four-category public benchmark with `python -m ai_mod
 ## Benchmark results (v0.16)
 
 Analyze matched outcomes, pass rates, paired costs and latency, uncertainty and missing evidence with `python -m ai_model_advisor.benchmark_analysis`. See [Benchmark Analysis](docs/BENCHMARK_ANALYSIS.md). Reports never change routing or infer an automatic winner.
+
+## Web interface (v0.17)
+
+After `pip install -e .`, run `ai-model-advisor-web` and open **http://127.0.0.1:8765**. Describe a task, choose Balanced/Quality/Cost/Speed and optionally filter the provider. View your primary recommendation, cheaper alternative, escalation and evidence. This web MVP is **local-only**, uses no external frontend CDN and does **not** call paid model APIs or save task text. It intentionally does not implement account management, deployment, history, or model comparison yet. See [Web UX](docs/WEB_UX.md).
