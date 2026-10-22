@@ -209,3 +209,7 @@ Preview one frozen experiment run using `python -m ai_model_advisor.benchmark_ru
 ## Synthetic benchmark suite (v0.15)
 
 Generate a frozen 20-task, four-category public benchmark with `python -m ai_model_advisor.benchmark_suite build --help`. Includes four training examples and sixteen deterministic JSON holdout tasks. No API calls are made by building or validating the bundle. These are synthetic, public checks rather than blind empirical model-quality benchmarks. See [Benchmark Suite](docs/BENCHMARK_SUITE.md).
+
+## Benchmark results (v0.16)
+
+Analyze matched outcomes, pass rates, paired costs and latency, uncertainty and missing evidence with `python -m ai_model_advisor.benchmark_analysis`. See [Benchmark Analysis](docs/BENCHMARK_ANALYSIS.md). Reports never change routing or infer an automatic winner.
