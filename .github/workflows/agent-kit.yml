@@ -1,0 +1,27 @@
+name: Civil AI Agent Kit offline verification
+
+on:
+  pull_request:
+    paths:
+      - "agent-kit/**"
+      - ".github/workflows/agent-kit.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-policy-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Offline synthetic regression tests
+        working-directory: agent-kit
+        run: python -m unittest discover -s tests -v
+      - name: Offline negative and positive fixture verification
+        working-directory: agent-kit
+        run: python tools/verify.py --self-test
