@@ -2,12 +2,16 @@
 const $ = id => document.getElementById(id);
 const task = $("task"), submit = $("submit"), error = $("form-error");
 let current = null;
+let currentToken = null;
 const example = "Audit my Python repository, investigate why integration tests fail, implement a safe fix, and verify the test suite.";
 function line(container,text){const li=document.createElement("li");li.textContent=text;container.appendChild(li)}
 function fill(id,items){const node=$(id);node.replaceChildren();for(const value of items)line(node,value)}
 function details(record){if(!record)return null;return record.label+" · "+record.effort+" reasoning · "+record.execution_mode.replaceAll("_"," ")}
 function render(response){
- const d=response.decision;current=d;$("empty").hidden=true;$("results").hidden=false;
+ const d=response.decision;current=d;currentToken=response.decision_id;
+ const selection=$("feedback-model");selection.replaceChildren();
+ for(const key of response.feedback_options||[]){const rec=d[key];if(!rec)continue;const option=document.createElement("option");option.value=key;option.textContent=(key.replaceAll("_"," ")+" — "+rec.label+" / "+rec.effort);selection.appendChild(option)}
+ $("feedback-form").reset();$("feedback-submit").disabled=false;$("feedback-status").textContent="";$("empty").hidden=true;$("results").hidden=false;
  const p=d.primary;$("primary-name").textContent=p.label;$("primary-provider").textContent=p.provider.toUpperCase()+"  /  "+p.model_id;
  const chips=$("primary-chips");chips.replaceChildren();for(const text of [p.effort+" reasoning",p.execution_mode.replaceAll("_"," ")]){const n=document.createElement("span");n.className="chip";n.textContent=text;chips.appendChild(n)}
  $("primary-reason").textContent=(p.reasons||[]).slice(0,2).join(" ")||"Selected from the current model registry and workload profile.";
@@ -44,3 +48,25 @@ $("copy").addEventListener("click",async()=>{
  try{await navigator.clipboard.writeText(text);$("copy").textContent="✓ Copied";setTimeout(()=>$("copy").textContent="⧉ Copy recommendation",1900)}catch{showError("Clipboard unavailable. You can select and copy the result manually.")}
 });
 fetch("/api/meta").then(r=>r.json()).then(d=>{$("version").textContent="v"+d.version;$("registry-status").textContent=d.current_models+" current models · "+d.registry_as_of}).catch(()=>{$("registry-status").textContent="Local registry"});
+
+$("feedback-form").addEventListener("submit",async event=>{
+ event.preventDefault();
+ if(!currentToken)return;
+ const outcome=$("feedback-outcome").value;
+ if(!outcome){$("feedback-status").textContent="Choose the outcome first.";return}
+ const costText=$("feedback-cost").value.trim();
+ const timeText=$("feedback-time").value.trim();
+ const payload={decision_id:currentToken,configuration:$("feedback-model").value,outcome};
+ if(costText)payload.cost_usd=Number(costText);
+ if(timeText)payload.latency_seconds=Number(timeText);
+ const button=$("feedback-submit");button.disabled=true;
+ $("feedback-status").textContent="Saving locally…";
+ try{
+  const response=await fetch("/api/feedback",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+  const data=await response.json();
+  if(!response.ok)throw new Error(data.error||"Unable to save.");
+  currentToken=null;
+  $("feedback-status").textContent="Saved locally. Your task text was not stored.";
+  button.textContent="✓ Result saved";
+ }catch(err){button.disabled=false;$("feedback-status").textContent=err.message||"Unable to save."}
+});
