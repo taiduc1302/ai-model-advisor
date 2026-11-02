@@ -1,0 +1,7 @@
+# Conservative example. Review against the installed Codex version before use.
+# Writable sandbox is limited to the workspace; network remains disabled.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+
+[sandbox_workspace_write]
+network_access = false
