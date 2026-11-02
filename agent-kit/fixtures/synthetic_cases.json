@@ -1,0 +1,324 @@
+{
+  "cases": [
+    {
+      "name": "valid synthetic takeoff",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": true
+    },
+    {
+      "name": "stale drawing revision",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R1",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "unverified scale",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": false,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "mixed or ambiguous units",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "feet/metres",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "nonfinite quantity",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": null,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "duplicate or mismatched markup",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-02",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "agent attempting approval",
+      "kind": "takeoff",
+      "record": {
+        "status": "APPROVED",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "valid fictional HeavyBid mapping",
+      "kind": "heavybid",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-soq.csv",
+        "source_revision": "R2",
+        "codebook_revision": "TEST-1",
+        "code": "SYN-C101",
+        "unit": "m3",
+        "mapping_evidence": "fictional mapping ledger line 1",
+        "codebook_verified": true,
+        "unit_matches": true,
+        "production_import": false,
+        "price_approved_by_agent": false
+      },
+      "expect_valid": true
+    },
+    {
+      "name": "unverified codebook",
+      "kind": "heavybid",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-soq.csv",
+        "source_revision": "R2",
+        "codebook_revision": "TEST-1",
+        "code": "SYN-C101",
+        "unit": "m3",
+        "mapping_evidence": "fictional mapping ledger line 1",
+        "codebook_verified": false,
+        "unit_matches": true,
+        "production_import": false,
+        "price_approved_by_agent": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "HeavyBid unit mismatch",
+      "kind": "heavybid",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-soq.csv",
+        "source_revision": "R2",
+        "codebook_revision": "TEST-1",
+        "code": "SYN-C101",
+        "unit": "m3",
+        "mapping_evidence": "fictional mapping ledger line 1",
+        "codebook_verified": true,
+        "unit_matches": false,
+        "production_import": false,
+        "price_approved_by_agent": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "unauthorized HeavyBid import",
+      "kind": "heavybid",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-soq.csv",
+        "source_revision": "R2",
+        "codebook_revision": "TEST-1",
+        "code": "SYN-C101",
+        "unit": "m3",
+        "mapping_evidence": "fictional mapping ledger line 1",
+        "codebook_verified": true,
+        "unit_matches": true,
+        "production_import": true,
+        "price_approved_by_agent": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "valid reconciled tender",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": 0,
+        "final_submit": false,
+        "agent_signed": false
+      },
+      "expect_valid": true
+    },
+    {
+      "name": "unresolved addenda conflicts",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": 701,
+        "final_submit": false,
+        "agent_signed": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "agent final submit",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": 0,
+        "final_submit": true,
+        "agent_signed": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "valid offline automation",
+      "kind": "automation",
+      "record": {
+        "status": "DRAFT",
+        "idempotency_key": "test-run-123",
+        "dry_run": true,
+        "network": false,
+        "paid_calls": 0,
+        "external_write": false,
+        "attempt": 1
+      },
+      "expect_valid": true
+    },
+    {
+      "name": "paid model invocation",
+      "kind": "automation",
+      "record": {
+        "status": "DRAFT",
+        "idempotency_key": "test-run-123",
+        "dry_run": true,
+        "network": false,
+        "paid_calls": 1,
+        "external_write": false,
+        "attempt": 1
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "network enabled",
+      "kind": "automation",
+      "record": {
+        "status": "DRAFT",
+        "idempotency_key": "test-run-123",
+        "dry_run": true,
+        "network": true,
+        "paid_calls": 0,
+        "external_write": false,
+        "attempt": 1
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "unauthorized external write",
+      "kind": "automation",
+      "record": {
+        "status": "DRAFT",
+        "idempotency_key": "test-run-123",
+        "dry_run": true,
+        "network": false,
+        "paid_calls": 0,
+        "external_write": true,
+        "attempt": 1
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "retry without reconciliation",
+      "kind": "automation",
+      "record": {
+        "status": "DRAFT",
+        "idempotency_key": "test-run-123",
+        "dry_run": true,
+        "network": false,
+        "paid_calls": 0,
+        "external_write": false,
+        "attempt": 2
+      },
+      "expect_valid": false
+    }
+  ]
+}
