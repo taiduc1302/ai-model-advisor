@@ -17,16 +17,36 @@ A **portable, original, offline-first** collection of agent instructions and det
 | `policies/CIVIL-ESTIMATING.md` | Evidence, units, revisions, native-tool read-back and estimator sign-off |
 | `fixtures/synthetic_cases.json` | Positive and negative fictional input records |
 | `tools/verify.py` | Standard-library-only offline preflight and metadata gate |
+| `tools/run_local.py` | Local two-stage runner with optional JSON evidence report; no GitHub Actions |
 | `tests/test_verify.py` | Regression and negative-control tests |
 
-## Verify first (Python 3.11+, no pip installs)
+## Verify locally (Python 3.11+, no pip installs, no GitHub Actions)
 
-From the `agent-kit` directory:
+From the `agent-kit` directory in PowerShell, Command Prompt, or a terminal:
+
+```shell
+python tools/run_local.py
+```
+
+This executes BOTH the fictional-case self-test and `unittest` negative controls, prints actual exit states and returns nonzero when a check fails. Optional report (choose a local directory outside this kit):
+
+```powershell
+python tools/run_local.py --json-report "$env:TEMP\\civil-agent-kit-report.json"
+```
+
+Direct commands remain available if you want to investigate failures:
 
 ```shell
 python tools/verify.py --self-test
 python -m unittest discover -s tests -v
 ```
+
+The report is not uploaded; it records actual observed exit codes, not estimates or native-system validation. No dependency installation, secrets or external provider call is required. Avoid committing locally generated reports.
+
+### GitHub usage and quota
+
+The kit's former `.github/workflows/agent-kit.yml` has been **removed** from this feature branch. Draft PR #18 was closed without merging because the **existing repository-wide** `.github/workflows/ci.yml` runs automatically on every PR (and on `main` pushes). Closing the PR avoids new PR-triggered runs for this branch; it does not disable other repositories' Actions or cancel previously started runs. Keep this kit in a feature branch until you are ready for a manual review. If you want **zero GitHub Actions across the whole project**, review and separately disable/remove the repository's existing CI workflow before opening any new PR.
+
 
 For a machine-generated **metadata record**, run:
 
