@@ -1,4 +1,4 @@
-from tools.ci.prune_merged_branches import (
+from tools.ai_model_advisor.prune_merged_branches import (
     MERGED_BRANCHES, NEVER_DELETE, eligibility,
     REPOSITORY,
 )

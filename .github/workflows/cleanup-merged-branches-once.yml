@@ -31,8 +31,8 @@ jobs:
       - name: Dry run and verify branch eligibility
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python -m tools.ci.prune_merged_branches
+        run: python -m tools.ai_model_advisor.prune_merged_branches
       - name: Delete only the verified, unchanged merged heads
         env:
           GITHUB_TOKEN: ${{ github.token }}
-        run: python -m tools.ci.prune_merged_branches --apply
+        run: python -m tools.ai_model_advisor.prune_merged_branches --apply
