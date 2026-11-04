@@ -117,7 +117,7 @@ def prune(*, apply: bool, token: str) -> dict[str, list[str]]:
     open_heads = {
         pr["head"]["ref"]
         for pr in open_prs
-        if (pr.get("head") or {}).get("repo", {}).get("full_name") == REPOSITORY
+        if ((pr.get("head") or {}).get("repo") or {}).get("full_name") == REPOSITORY
     }
     report: dict[str, list[str]] = {
         "deleted": [], "eligible_dry_run": [], "skipped": [], "errors": []
@@ -140,7 +140,7 @@ def prune(*, apply: bool, token: str) -> dict[str, list[str]]:
                 pr for pr in prs
                 if (pr.get("head") or {}).get("ref") == name
                 and pr.get("merged_at")
-                and (pr.get("head") or {}).get("repo", {}).get("full_name") == REPOSITORY
+                and ((pr.get("head") or {}).get("repo") or {}).get("full_name") == REPOSITORY
             ]
             if len(matches) != 1:
                 report["skipped"].append(name + ": missing unique merged PR")
@@ -160,6 +160,10 @@ def prune(*, apply: bool, token: str) -> dict[str, list[str]]:
             report["eligible_dry_run"].append(name)
             continue
         try:
+            fresh = github_request(token, "GET", "/branches/" + encoded)
+            if not isinstance(fresh, dict) or fresh.get("protected") is not False or (fresh.get("commit") or {}).get("sha") != (branch_data.get("commit") or {}).get("sha"):
+                report["skipped"].append(name + ": changed immediately before deletion")
+                continue
             github_request(token, "DELETE", "/git/refs/heads/" + encoded)
             report["deleted"].append(name)
         except RuntimeError as exc:
