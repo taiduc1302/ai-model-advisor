@@ -1,0 +1,38 @@
+name: One-time merged branch cleanup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/cleanup-merged-branches-once.yml"
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: ai-model-advisor-one-time-cleanup
+  cancel-in-progress: false
+
+jobs:
+  prune:
+    if: github.repository == 'taiduc1302/ai-model-advisor'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Checkout merged main
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Dry run and verify branch eligibility
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m tools.ci.prune_merged_branches
+      - name: Delete only the verified, unchanged merged heads
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m tools.ci.prune_merged_branches --apply
