@@ -7,6 +7,26 @@ const example = "Audit my Python repository, investigate why integration tests f
 function line(container,text){const li=document.createElement("li");li.textContent=text;container.appendChild(li)}
 function fill(id,items){const node=$(id);node.replaceChildren();for(const value of items)line(node,value)}
 function details(record){if(!record)return null;return record.label+" · "+record.effort+" reasoning · "+record.execution_mode.replaceAll("_"," ")}
+
+/* Ported semantic comparison pattern from taiduc1302/design-reference-library
+ * (components/src/components.mjs, 2539c661), adapted for the local CSP and
+ * the Advisor's native visual tokens. Every value uses textContent. */
+function renderComparison(decision){
+ const body=$("decision-matrix-body");body.replaceChildren();
+ const paths=[["Primary",decision.primary],["Lower-priced option",decision.cheaper_fallback],["Escalation",decision.escalation]];
+ for(const [name,record] of paths){
+  const tr=document.createElement("tr");
+  const cells=[name,record?.label||"Not available",record?.effort?record.effort+" reasoning":"—",record?.execution_mode?record.execution_mode.replaceAll("_"," "):"—"];
+  cells.forEach((value,index)=>{
+   const cell=document.createElement(index===0?"th":"td");
+   if(index===0)cell.scope="row";
+   cell.textContent=String(value);
+   tr.appendChild(cell);
+  });
+  body.appendChild(tr);
+ }
+}
+
 function render(response){
  const d=response.decision;current=d;currentToken=response.decision_id;
  const selection=$("feedback-model");selection.replaceChildren();
@@ -17,10 +37,7 @@ function render(response){
  $("primary-reason").textContent=(p.reasons||[]).slice(0,2).join(" ")||"Selected from the current model registry and workload profile.";
  $("primary-score").textContent="Routing score "+Number(p.score).toFixed(1);
  $("primary-confidence").textContent="Heuristic confidence "+Math.round(Number(p.confidence)*100)+"%";
- $("fallback-name").textContent=d.cheaper_fallback?.label||"No qualified fallback";
- $("fallback-sub").textContent=details(d.cheaper_fallback)||"No lower-priced model met the permitted quality-score gap.";
- $("escalation-name").textContent=d.escalation?.label||"Raise effort / review";
- $("escalation-sub").textContent=details(d.escalation)||"Follow the escalation instructions below.";
+ renderComparison(d);
  fill("triggers",d.escalation_triggers||[]);fill("evidence",d.personal_evidence||[]);fill("notes",d.decision_notes||[]);
  $("analysis-date").textContent="REGISTRY · "+d.registry_as_of;
  $("results").scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});

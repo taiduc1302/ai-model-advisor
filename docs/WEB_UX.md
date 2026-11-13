@@ -40,3 +40,12 @@ v0.17 is an MVP, not a full analytics dashboard. History, durable feedback,
 model comparison, experiment lab and user accounts are later enhancements.
 The confidence display uses the underlying **heuristic** confidence and should
 not be read as statistically calibrated probability of success.
+
+
+## Decision comparison pilot (2026-11-12)
+
+The results view now includes a keyboard-scrollable, semantically labeled table that compares **primary**, **lower-priced qualified option**, and **escalation** from the actual `RoutingDecision`. Missing paths are clearly marked `Not available`, never silently filled. Cells are constructed with `textContent`; data stays local and the server/API/CSP are unchanged.
+
+This adapts the accessible data-table pattern from [design-reference-library](https://github.com/taiduc1302/design-reference-library/tree/2539c661ac0b21d10cffc34ffe719998384bf49d/components) instead of importing its unrelated light-theme CSS or creating a runtime network dependency. It retains the Advisor's dark palette and local-only architecture. The primary suggestion is explicitly *heuristic*, not a calibrated success probability.
+
+**Review gate:** PR must pass the existing Python suite, browser visual checks at 320/390/768/1440 px (including the results and API failure views), keyboard/screen-reader inspection, and backend safety tests before merging. In this execution, full packaged HTTP/CSP visual QA is not claimed when localhost navigation is policy-blocked.
