@@ -43,5 +43,9 @@ jobs:
         run: python -c 'from importlib.resources import files; assert files("ai_model_advisor").joinpath("web/index.html").read_text()'
       - name: Feedback UX regression tests
         run: pytest -q tests/test_feedback_web_ui.py
+      - name: Infrastructure review tests
+        run: pytest -q tests/test_registry_review.py tests/test_infra_configuration.py
+      - name: Branch cleanup fail-closed unit tests
+        run: pytest -q tests/test_prune_merged_branches.py
       - name: CLI smoke
         run: ai-model-advisor --help

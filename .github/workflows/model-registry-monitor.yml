@@ -3,24 +3,27 @@ name: Model Registry Monitor
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 15 * * *"
+    # Weekly to reduce Actions usage and repeat alerts.
+    - cron: "17 15 * * 1"
 
 permissions:
   contents: read
+  issues: write
+
+concurrency:
+  group: model-registry-monitor
+  cancel-in-progress: false
 
 jobs:
   scan:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install Advisor
         run: python -m pip install -e .
-
       - name: Restore source baseline
         uses: actions/cache@v4
         with:
@@ -28,7 +31,6 @@ jobs:
           key: ${{ runner.os }}-model-source-baseline-${{ github.run_id }}
           restore-keys: |
             ${{ runner.os }}-model-source-baseline-
-
       - name: Scan official model sources
         run: |
           mkdir -p .model-advisor model-advisor-output
@@ -37,30 +39,41 @@ jobs:
             --write-baseline .model-advisor/source-baseline.json \
             --output model-advisor-output/source-scan.md \
             --json-output model-advisor-output/source-scan.json
-
+      - name: Prepare human-review alert
+        id: review
+        run: |
+          python -m tools.ai_model_advisor.registry_review \
+            --report model-advisor-output/source-scan.json \
+            --body model-advisor-output/review-issue.md \
+            --output model-advisor-output/review.json
+          if python -c 'import json; assert json.load(open("model-advisor-output/review.json"))["review_required"]'; then
+            echo "required=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::Unregistered model-source signals require human review."
+          else
+            echo "required=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Publish source scan summary
         run: cat model-advisor-output/source-scan.md >> "$GITHUB_STEP_SUMMARY"
-
-      - name: Upload source scan
+      - name: Upload scan and review evidence
         uses: actions/upload-artifact@v4
         with:
           name: model-registry-monitor-${{ github.run_id }}
           path: model-advisor-output/
-          retention-days: 30
-
-      - name: Require review for new model signals
+          retention-days: 14
+      - name: Create or update one registry review issue
+        if: steps.review.outputs.required == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          report = json.loads(
-              Path("model-advisor-output/source-scan.json").read_text(encoding="utf-8")
-          )
-          new_signals = report.get("new_unknown_signals") or []
-          if new_signals:
-              print("New unregistered model signals require registry review:")
-              for signal in new_signals:
-                  print(f"- {signal}")
-              raise SystemExit(2)
-          PY
+          title="Model registry: review unregistered source signals"
+          issue=$(gh issue list --state open --limit 100 --json number,title \
+            --jq '.[] | select(.title == "Model registry: review unregistered source signals") | .number' \
+            | head -n 1)
+          if [ -z "$issue" ]; then
+            gh issue create --title "$title" --body-file model-advisor-output/review-issue.md
+          else
+            gh issue view "$issue" --json body --jq .body > model-advisor-output/existing-issue.md
+            if ! cmp -s model-advisor-output/existing-issue.md model-advisor-output/review-issue.md; then
+              gh issue edit "$issue" --body-file model-advisor-output/review-issue.md
+            fi
+          fi
