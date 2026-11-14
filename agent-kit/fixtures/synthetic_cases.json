@@ -319,6 +319,457 @@
         "attempt": 2
       },
       "expect_valid": false
+    },
+    {
+      "name": "invalid zero scale denominator",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:0",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "invalid scale notation",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:unknown",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "native markup not read back",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "agent approval hidden in extra field",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism",
+        "approval_status": "APPROVED"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "agent attempts to approve markups",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism",
+        "markups_approved_by_agent": true
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "invalid list as status",
+      "kind": "takeoff",
+      "record": {
+        "status": [],
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "non-finite quantity as string",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": "NaN",
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "negative quantity",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": -5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism"
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "addenda conflicts boolean false is not zero",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": false,
+        "final_submit": false,
+        "agent_signed": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "addenda conflicts string zero is invalid",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": "0",
+        "final_submit": false,
+        "agent_signed": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "agent forges human approval",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": 0,
+        "final_submit": false,
+        "agent_signed": false,
+        "human_approved": true
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "paid model calls boolean false is invalid",
+      "kind": "automation",
+      "record": {
+        "status": "DRAFT",
+        "idempotency_key": "test-run-123",
+        "dry_run": true,
+        "network": false,
+        "paid_calls": false,
+        "external_write": false,
+        "attempt": 1
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "retry counter boolean true is invalid",
+      "kind": "automation",
+      "record": {
+        "status": "DRAFT",
+        "idempotency_key": "test-run-123",
+        "dry_run": true,
+        "network": false,
+        "paid_calls": 0,
+        "external_write": false,
+        "attempt": true
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "missing codebook evidence",
+      "kind": "heavybid",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-soq.csv",
+        "source_revision": "R2",
+        "codebook_revision": "TEST-1",
+        "code": "SYN-C101",
+        "unit": "m3",
+        "mapping_evidence": "",
+        "codebook_verified": true,
+        "unit_matches": true,
+        "production_import": false,
+        "price_approved_by_agent": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "exact duplicate takeoff records",
+      "records": [
+        {
+          "kind": "takeoff",
+          "record": {
+            "status": "DRAFT",
+            "source_file": "synthetic-plan-A.pdf",
+            "sheet": "C-101",
+            "revision": "R2",
+            "governing_revision": "R2",
+            "scale": "1:200",
+            "scale_verified": true,
+            "unit": "m3",
+            "quantity": 14.5,
+            "markup_id": "M-01",
+            "native_readback_id": "M-01",
+            "method": "synthetic rectangular prism"
+          }
+        },
+        {
+          "kind": "takeoff",
+          "record": {
+            "status": "DRAFT",
+            "source_file": "synthetic-plan-A.pdf",
+            "sheet": "C-101",
+            "revision": "R2",
+            "governing_revision": "R2",
+            "scale": "1:200",
+            "scale_verified": true,
+            "unit": "m3",
+            "quantity": 14.5,
+            "markup_id": "M-01",
+            "native_readback_id": "M-01",
+            "method": "synthetic rectangular prism"
+          }
+        }
+      ],
+      "expect_valid": false
+    },
+    {
+      "name": "duplicate logical markup with changed quantity",
+      "records": [
+        {
+          "kind": "takeoff",
+          "record": {
+            "status": "DRAFT",
+            "source_file": "synthetic-plan-A.pdf",
+            "sheet": "C-101",
+            "revision": "R2",
+            "governing_revision": "R2",
+            "scale": "1:200",
+            "scale_verified": true,
+            "unit": "m3",
+            "quantity": 14.5,
+            "markup_id": "M-01",
+            "native_readback_id": "M-01",
+            "method": "synthetic rectangular prism"
+          }
+        },
+        {
+          "kind": "takeoff",
+          "record": {
+            "status": "DRAFT",
+            "source_file": "synthetic-plan-A.pdf",
+            "sheet": "C-101",
+            "revision": "R2",
+            "governing_revision": "R2",
+            "scale": "1:200",
+            "scale_verified": true,
+            "unit": "m3",
+            "quantity": 17,
+            "markup_id": "M-01",
+            "native_readback_id": "M-01",
+            "method": "synthetic rectangular prism"
+          }
+        }
+      ],
+      "expect_valid": false
+    },
+    {
+      "name": "duplicate idempotency key with different dry-run status",
+      "records": [
+        {
+          "kind": "automation",
+          "record": {
+            "status": "DRAFT",
+            "idempotency_key": "test-run-123",
+            "dry_run": true,
+            "network": false,
+            "paid_calls": 0,
+            "external_write": false,
+            "attempt": 1
+          }
+        },
+        {
+          "kind": "automation",
+          "record": {
+            "status": "NEEDS_HUMAN_REVIEW",
+            "idempotency_key": "test-run-123",
+            "dry_run": true,
+            "network": false,
+            "paid_calls": 0,
+            "external_write": false,
+            "attempt": 1
+          }
+        }
+      ],
+      "expect_valid": false
+    },
+    {
+      "name": "two distinct valid markups",
+      "records": [
+        {
+          "kind": "takeoff",
+          "record": {
+            "status": "DRAFT",
+            "source_file": "synthetic-plan-A.pdf",
+            "sheet": "C-101",
+            "revision": "R2",
+            "governing_revision": "R2",
+            "scale": "1:200",
+            "scale_verified": true,
+            "unit": "m3",
+            "quantity": 14.5,
+            "markup_id": "M-01",
+            "native_readback_id": "M-01",
+            "method": "synthetic rectangular prism"
+          }
+        },
+        {
+          "kind": "takeoff",
+          "record": {
+            "status": "DRAFT",
+            "source_file": "synthetic-plan-A.pdf",
+            "sheet": "C-101",
+            "revision": "R2",
+            "governing_revision": "R2",
+            "scale": "1:200",
+            "scale_verified": true,
+            "unit": "m3",
+            "quantity": 14.5,
+            "markup_id": "M-02",
+            "native_readback_id": "M-02",
+            "method": "synthetic rectangular prism"
+          }
+        }
+      ],
+      "expect_valid": true
+    },
+    {
+      "name": "different idempotency keys",
+      "records": [
+        {
+          "kind": "automation",
+          "record": {
+            "status": "DRAFT",
+            "idempotency_key": "test-run-123",
+            "dry_run": true,
+            "network": false,
+            "paid_calls": 0,
+            "external_write": false,
+            "attempt": 1
+          }
+        },
+        {
+          "kind": "automation",
+          "record": {
+            "status": "DRAFT",
+            "idempotency_key": "test-run-124",
+            "dry_run": true,
+            "network": false,
+            "paid_calls": 0,
+            "external_write": false,
+            "attempt": 1
+          }
+        }
+      ],
+      "expect_valid": true
+    },
+    {
+      "name": "empty records list",
+      "records": [],
+      "expect_valid": false
+    },
+    {
+      "name": "one malformed record entry",
+      "records": [
+        {
+          "kind": "tender",
+          "record": {
+            "status": "DRAFT",
+            "source_file": "fictional-spec.pdf",
+            "governing_addendum": "A02",
+            "source_citation": "section 01 21 00 p 4",
+            "addenda_reconciled": true,
+            "unresolved_conflicts": 0,
+            "final_submit": false,
+            "agent_signed": false
+          }
+        },
+        {}
+      ],
+      "expect_valid": false
     }
   ]
 }
