@@ -17,14 +17,15 @@ A **portable, original, offline-first** collection of agent instructions and det
 | `policies/CIVIL-ESTIMATING.md` | Evidence, units, revisions, native-tool read-back and estimator sign-off |
 | `fixtures/synthetic_cases.json` | Positive and negative fictional input records |
 | `tools/verify.py` | Standard-library-only offline preflight and metadata gate |
-| `RUN_CHECKS_WINDOWS.cmd` | Double-clickable Windows Command Prompt launcher |
+| `RUN_CHECKS_WINDOWS.bat` | One-click Windows test entry point |
+| `RUN_CHECKS_WINDOWS.cmd` | Windows Command Prompt launcher used by the `.bat` wrapper |
 | `tools/run_local.py` | Local two-stage runner with optional JSON evidence report; no GitHub Actions |
 | `tests/test_verify.py` | Regression and negative-control tests |
 | `tests/test_run_local.py` | Runner path-safety and manifest checks |
 
 ## Verify locally (Python 3.11+, no pip installs, no GitHub Actions)
 
-For Windows, double-click `RUN_CHECKS_WINDOWS.cmd` (or run it from Command Prompt). The launcher uses `py -3` when available, or falls back to `python`. **Windows GUI execution is not yet verified.**
+For Windows, run `RUN_CHECKS_WINDOWS.bat` from Command Prompt (or double-click it to launch); the wrapper calls `RUN_CHECKS_WINDOWS.cmd`. The launcher uses `py -3` when available, or falls back to `python`. **Windows GUI execution is not yet verified.**
 
 From the `agent-kit` directory in PowerShell, Command Prompt, or a terminal:
 
