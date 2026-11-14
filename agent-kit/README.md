@@ -17,10 +17,14 @@ A **portable, original, offline-first** collection of agent instructions and det
 | `policies/CIVIL-ESTIMATING.md` | Evidence, units, revisions, native-tool read-back and estimator sign-off |
 | `fixtures/synthetic_cases.json` | Positive and negative fictional input records |
 | `tools/verify.py` | Standard-library-only offline preflight and metadata gate |
+| `RUN_CHECKS_WINDOWS.cmd` | Double-clickable Windows Command Prompt launcher |
 | `tools/run_local.py` | Local two-stage runner with optional JSON evidence report; no GitHub Actions |
 | `tests/test_verify.py` | Regression and negative-control tests |
+| `tests/test_run_local.py` | Runner path-safety and manifest checks |
 
 ## Verify locally (Python 3.11+, no pip installs, no GitHub Actions)
+
+For Windows, double-click `RUN_CHECKS_WINDOWS.cmd` (or run it from Command Prompt). The launcher uses `py -3` when available, or falls back to `python`. **Windows GUI execution is not yet verified.**
 
 From the `agent-kit` directory in PowerShell, Command Prompt, or a terminal:
 
@@ -28,7 +32,7 @@ From the `agent-kit` directory in PowerShell, Command Prompt, or a terminal:
 python tools/run_local.py
 ```
 
-This executes BOTH the fictional-case self-test and `unittest` negative controls, prints actual exit states and returns nonzero when a check fails. Optional report (choose a local directory outside this kit):
+This executes BOTH the **40** fictional positive/negative cases and **20** deterministic `unittest` methods, prints observed exit states and returns nonzero when a check fails. Each generated report also includes SHA-256 hashes of the validation source/fixtures to identify exactly which bytes were tested. No GitHub Actions are required. Optional report (choose a local directory outside this kit):
 
 ```powershell
 python tools/run_local.py --json-report "$env:TEMP\\civil-agent-kit-report.json"
@@ -41,7 +45,7 @@ python tools/verify.py --self-test
 python -m unittest discover -s tests -v
 ```
 
-The report is not uploaded; it records actual observed exit codes, not estimates or native-system validation. No dependency installation, secrets or external provider call is required. Avoid committing locally generated reports.
+The report is not uploaded; it records actual observed exit codes, not estimates or native-system validation. The runner refuses to save reports inside the repository. No dependency installation, secrets or external provider call is required. Avoid committing locally generated reports.
 
 ### GitHub usage and quota
 
@@ -75,3 +79,10 @@ Default: **zero paid model API calls**, zero network access for tests, zero glob
 ## Why hosted under ai-model-advisor?
 
 This is a self-contained first pilot in an owned project that already has Python test infrastructure. It can be extracted later to a dedicated `civil-ai-agent-kit` repository without depending on the advisor's package. It does not change routing, pricing, model providers, or runtime code.
+
+## Verification and limits (2026-11-13 local baseline)
+
+- 40/40 synthetic scenarios and 20/20 unit-test methods **PASS** in an isolated local Python **3.13.5** run (Linux), no dependencies or network access. See `docs/LOCAL-VERIFICATION-2026-11-13.md` for exact scope and caveats.
+- `.cmd` is a Windows launcher template; not yet executed in real Windows/PowerShell. No native Bluebeam, AGTEK, or HeavyBid tests, real tenders, or production permissions were exercised.
+- These metadata gates check **declared** values only. A claim such as `scale_verified: true` is not independent measurement evidence. They are safety preflight checks, not a substitute for drawings, source validation or estimator sign-off.
+- Do **not** open a PR just to run this kit: the repository-wide CI still runs on `pull_request` and can consume Actions minutes. Feature-branch pushes alone do not match that workflow's trigger.
