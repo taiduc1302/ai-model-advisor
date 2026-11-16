@@ -49,3 +49,7 @@ The results view now includes a keyboard-scrollable, semantically labeled table 
 This adapts the accessible data-table pattern from [design-reference-library](https://github.com/taiduc1302/design-reference-library/tree/2539c661ac0b21d10cffc34ffe719998384bf49d/components) instead of importing its unrelated light-theme CSS or creating a runtime network dependency. It retains the Advisor's dark palette and local-only architecture. The primary suggestion is explicitly *heuristic*, not a calibrated success probability.
 
 **Review gate:** PR must pass the existing Python suite, browser visual checks at 320/390/768/1440 px (including the results and API failure views), keyboard/screen-reader inspection, and backend safety tests before merging. In this execution, full packaged HTTP/CSP visual QA is not claimed when localhost navigation is policy-blocked.
+
+### Regression coverage wiring (2026-11-15)
+
+The standalone `tests/test_design_reference_ux.py` contract is also invoked by a new test in `tests/test_web_ui.py`, which the existing Linux CI job selects. This verifies that the decision matrix remains native, local, XSS-safe and responsive without introducing new endpoints. Full browser rendering in Chromium, physical Windows/Edge behavior and user review remain separate acceptance steps; green Python CI alone is not visual sign-off.
