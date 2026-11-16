@@ -35,6 +35,26 @@ class OfflineVerifierTests(unittest.TestCase):
                     valid = not VERIFY.validate(case["kind"], case["record"])
                 self.assertEqual(valid, case["expect_valid"])
 
+    def test_unrecognized_action_keys_fail_closed(self):
+        attempts = (("tender", "submit_bid", True),
+                    ("heavybid", "approve_price", True),
+                    ("takeoff", "native_readback_verified", False),
+                    ("automation", "send_email", True),
+                    ("tender", "metadata", {"approved": True}))
+        for kind, field, value in attempts:
+            with self.subTest(kind=kind, field=field):
+                original = baseline(kind)
+                self.assertTrue(VERIFY.validate(kind, {**original, field: value}))
+
+    def test_missing_explicit_side_effect_denials_fail_closed(self):
+        for kind, keys in (("heavybid", ("production_import", "price_approved_by_agent")),
+                           ("tender", ("final_submit", "agent_signed"))):
+            for key in keys:
+                with self.subTest(kind=kind, missing=key):
+                    original = baseline(kind)
+                    del original[key]
+                    self.assertTrue(VERIFY.validate(kind, original))
+
     def test_missing_or_malformed_bundle_fails_closed(self):
         for value in ({}, {"records": []}, {"records": "text"}, [], None,
                       {"records": ["untrusted"]}, {"records": [None]}):
