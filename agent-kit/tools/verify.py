@@ -161,6 +161,10 @@ def verify_bundle(bundle: dict) -> list[tuple[int, list[str]]]:
             continue
         kind, record = item.get("kind"), item.get("record")
         problems = validate(kind, record)
+        # A safe-to-emit BLOCKED/REVIEW status is not a successful preflight.
+        # Only draft records may receive a bundle-level metadata PASS.
+        if isinstance(record, dict) and record.get("status") != "DRAFT":
+            problems.append("record is blocked or requires human review; cannot pass preflight")
         try:
             normalized = json.dumps(item, sort_keys=True, ensure_ascii=False, allow_nan=False)
         except (TypeError, ValueError):
