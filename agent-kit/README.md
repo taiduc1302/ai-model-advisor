@@ -33,7 +33,7 @@ From the `agent-kit` directory in PowerShell, Command Prompt, or a terminal:
 python tools/run_local.py
 ```
 
-This executes BOTH the **40** fictional positive/negative cases and **20** deterministic `unittest` methods, prints observed exit states and returns nonzero when a check fails. Each generated report also includes SHA-256 hashes of the validation source/fixtures to identify exactly which bytes were tested. No GitHub Actions are required. Optional report (choose a local directory outside this kit):
+This executes BOTH the **48** fictional positive/negative cases and **22** deterministic `unittest` methods, prints observed exit states and returns nonzero when a check fails. Each generated report also includes SHA-256 hashes of the validation source/fixtures to identify exactly which bytes were tested. No GitHub Actions are required. Optional report (choose a local directory outside this kit):
 
 ```powershell
 python tools/run_local.py --json-report "$env:TEMP\\civil-agent-kit-report.json"
@@ -87,3 +87,11 @@ This is a self-contained first pilot in an owned project that already has Python
 - `.cmd` is a Windows launcher template; not yet executed in real Windows/PowerShell. No native Bluebeam, AGTEK, or HeavyBid tests, real tenders, or production permissions were exercised.
 - These metadata gates check **declared** values only. A claim such as `scale_verified: true` is not independent measurement evidence. They are safety preflight checks, not a substitute for drawings, source validation or estimator sign-off.
 - Do **not** open a PR just to run this kit: the repository-wide CI still runs on `pull_request` and can consume Actions minutes. Feature-branch pushes alone do not match that workflow's trigger.
+
+## 2026-11-15 hardening and agent onboarding
+
+- Added stricter, allowlisted metadata fields for the four synthetic record kinds. Unexpected keys such as `submit_bid`, `approve_price`, and `send_email` fail closed instead of being ignored.
+- Tender and HeavyBid records must explicitly deny AI-controlled final submission, signature, production import and price approval; omissions are no longer treated as consent.
+- Expanded the offline regression matrix to **48 cases** and **22 unit tests**. The published `tools/verify.py`, `tests/test_verify.py` and `fixtures/synthetic_cases.json` Git blob hashes matched the locally exercised content after upload. See `docs/LOCAL-VERIFICATION-2026-11-15.md`.
+- Added root-level `../AGENTS.md` and `../CLAUDE.md` **on this feature branch only** to make the repo-specific rules discoverable. They do not modify application routing, tools, or permissions and do not install hooks/MCP servers.
+- Tests are synthetic/offline, so no claim is made about native Bluebeam, AGTEK, HeavyBid, real tenders, production approval, Windows batch execution or full application regressions.
