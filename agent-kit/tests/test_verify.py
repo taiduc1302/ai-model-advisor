@@ -55,6 +55,16 @@ class OfflineVerifierTests(unittest.TestCase):
                     del original[key]
                     self.assertTrue(VERIFY.validate(kind, original))
 
+    def test_blocked_or_human_review_status_never_passes_bundle(self):
+        for kind in ("takeoff", "heavybid", "tender", "automation"):
+            for status in ("BLOCKED", "NEEDS_HUMAN_REVIEW"):
+                with self.subTest(kind=kind, status=status):
+                    original = {**baseline(kind), "status": status}
+                    self.assertFalse(VERIFY.validate(kind, original))
+                    self.assertTrue(VERIFY.verify_bundle({
+                        "records": [entry(kind, original)]
+                    }))
+
     def test_missing_or_malformed_bundle_fails_closed(self):
         for value in ({}, {"records": []}, {"records": "text"}, [], None,
                       {"records": ["untrusted"]}, {"records": [None]}):
