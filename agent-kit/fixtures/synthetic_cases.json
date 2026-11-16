@@ -902,6 +902,48 @@
         "production_import": false
       },
       "expect_valid": false
+    },
+    {
+      "name": "blocked takeoff cannot pass bundle preflight",
+      "records": [
+        {
+          "kind": "takeoff",
+          "record": {
+            "status": "BLOCKED",
+            "source_file": "synthetic-plan-A.pdf",
+            "sheet": "C-101",
+            "revision": "R2",
+            "governing_revision": "R2",
+            "scale": "1:200",
+            "scale_verified": true,
+            "unit": "m3",
+            "quantity": 14.5,
+            "markup_id": "M-01",
+            "native_readback_id": "M-01",
+            "method": "synthetic rectangular prism"
+          }
+        }
+      ],
+      "expect_valid": false
+    },
+    {
+      "name": "human review tender cannot pass bundle preflight",
+      "records": [
+        {
+          "kind": "tender",
+          "record": {
+            "status": "NEEDS_HUMAN_REVIEW",
+            "source_file": "fictional-spec.pdf",
+            "governing_addendum": "A02",
+            "source_citation": "section 01 21 00 p 4",
+            "addenda_reconciled": true,
+            "unresolved_conflicts": 0,
+            "final_submit": false,
+            "agent_signed": false
+          }
+        }
+      ],
+      "expect_valid": false
     }
   ]
 }
