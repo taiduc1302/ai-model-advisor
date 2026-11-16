@@ -33,7 +33,7 @@ From the `agent-kit` directory in PowerShell, Command Prompt, or a terminal:
 python tools/run_local.py
 ```
 
-This executes BOTH the **48** fictional positive/negative cases and **22** deterministic `unittest` methods, prints observed exit states and returns nonzero when a check fails. Each generated report also includes SHA-256 hashes of the validation source/fixtures to identify exactly which bytes were tested. No GitHub Actions are required. Optional report (choose a local directory outside this kit):
+This executes BOTH the **50** fictional positive/negative cases and **23** deterministic `unittest` methods, prints observed exit states and returns nonzero when a check fails. Each generated report also includes SHA-256 hashes of the validation source/fixtures to identify exactly which bytes were tested. No GitHub Actions are required. Optional report (choose a local directory outside this kit):
 
 ```powershell
 python tools/run_local.py --json-report "$env:TEMP\\civil-agent-kit-report.json"
@@ -95,3 +95,9 @@ This is a self-contained first pilot in an owned project that already has Python
 - Expanded the offline regression matrix to **48 cases** and **22 unit tests**. The published `tools/verify.py`, `tests/test_verify.py` and `fixtures/synthetic_cases.json` Git blob hashes matched the locally exercised content after upload. See `docs/LOCAL-VERIFICATION-2026-11-15.md`.
 - Added root-level `../AGENTS.md` and `../CLAUDE.md` **on this feature branch only** to make the repo-specific rules discoverable. They do not modify application routing, tools, or permissions and do not install hooks/MCP servers.
 - Tests are synthetic/offline, so no claim is made about native Bluebeam, AGTEK, HeavyBid, real tenders, production approval, Windows batch execution or full application regressions.
+
+## 2026-11-15 bundle-status safety gate (current verified baseline)
+
+The bundle verifier now rejects records whose status is `BLOCKED` or `NEEDS_HUMAN_REVIEW`: safe-to-emit statuses must **not** be confused with passing preflight. The latest offline test run passed **50/50** synthetic scenarios and **23/23** unit-test methods on Linux / Python 3.13.5; a separate CLI smoke check confirmed the expected exit codes for DRAFT, BLOCKED, NEEDS_HUMAN_REVIEW, and unknown final-submit fields. Full source/fixture Git blob hashes matched the published feature branch. See `docs/LOCAL-VERIFICATION-2026-11-15-BUNDLE-STATUS.md`.
+
+This establishes a repeatable **metadata gate**, not document authenticity, native measurement accuracy, Windows compatibility, or estimator approval. The earlier 40/20 and 48/22 baselines remain historical records.
