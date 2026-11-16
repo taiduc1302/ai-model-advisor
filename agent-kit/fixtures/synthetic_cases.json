@@ -770,6 +770,138 @@
         {}
       ],
       "expect_valid": false
+    },
+    {
+      "name": "unknown tender submit action",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": 0,
+        "final_submit": false,
+        "agent_signed": false,
+        "submit_bid": true
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "unknown pricing approval action",
+      "kind": "heavybid",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-soq.csv",
+        "source_revision": "R2",
+        "codebook_revision": "TEST-1",
+        "code": "SYN-C101",
+        "unit": "m3",
+        "mapping_evidence": "fictional mapping ledger line 1",
+        "codebook_verified": true,
+        "unit_matches": true,
+        "production_import": false,
+        "price_approved_by_agent": false,
+        "approve_price": true
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "unknown native verification claim",
+      "kind": "takeoff",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "synthetic-plan-A.pdf",
+        "sheet": "C-101",
+        "revision": "R2",
+        "governing_revision": "R2",
+        "scale": "1:200",
+        "scale_verified": true,
+        "unit": "m3",
+        "quantity": 14.5,
+        "markup_id": "M-01",
+        "native_readback_id": "M-01",
+        "method": "synthetic rectangular prism",
+        "native_readback_verified": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "unknown email action",
+      "kind": "automation",
+      "record": {
+        "status": "DRAFT",
+        "idempotency_key": "test-run-123",
+        "dry_run": true,
+        "network": false,
+        "paid_calls": 0,
+        "external_write": false,
+        "attempt": 1,
+        "send_email": true
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "missing tender submission denial",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": 0,
+        "agent_signed": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "missing tender signature denial",
+      "kind": "tender",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-spec.pdf",
+        "governing_addendum": "A02",
+        "source_citation": "section 01 21 00 p 4",
+        "addenda_reconciled": true,
+        "unresolved_conflicts": 0,
+        "final_submit": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "missing HeavyBid import denial",
+      "kind": "heavybid",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-soq.csv",
+        "source_revision": "R2",
+        "codebook_revision": "TEST-1",
+        "code": "SYN-C101",
+        "unit": "m3",
+        "mapping_evidence": "fictional mapping ledger line 1",
+        "codebook_verified": true,
+        "unit_matches": true,
+        "price_approved_by_agent": false
+      },
+      "expect_valid": false
+    },
+    {
+      "name": "missing pricing approval denial",
+      "kind": "heavybid",
+      "record": {
+        "status": "DRAFT",
+        "source_file": "fictional-soq.csv",
+        "source_revision": "R2",
+        "codebook_revision": "TEST-1",
+        "code": "SYN-C101",
+        "unit": "m3",
+        "mapping_evidence": "fictional mapping ledger line 1",
+        "codebook_verified": true,
+        "unit_matches": true,
+        "production_import": false
+      },
+      "expect_valid": false
     }
   ]
 }
