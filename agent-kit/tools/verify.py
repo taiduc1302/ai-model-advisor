@@ -18,6 +18,29 @@ UNAUTHORIZED_AGENT_FLAGS = frozenset({
 TAKEOFF_UNITS = frozenset({"m", "m2", "m3", "ft", "ft2", "ft3", "ea"})
 SCALE_PATTERN = re.compile(r"1:([1-9][0-9]*)\Z", re.ASCII)
 
+# Explicit, pilot-only metadata contracts. Unknown keys fail closed rather than
+# allowing an unreviewed field to silently request submission or approval.
+EXPECTED_FIELDS = {
+    "takeoff": frozenset({
+        "status", "source_file", "sheet", "revision", "governing_revision",
+        "scale", "scale_verified", "unit", "quantity", "markup_id",
+        "native_readback_id", "method",
+    }),
+    "heavybid": frozenset({
+        "status", "source_file", "source_revision", "codebook_revision", "code",
+        "unit", "mapping_evidence", "codebook_verified", "unit_matches",
+        "production_import", "price_approved_by_agent",
+    }),
+    "tender": frozenset({
+        "status", "source_file", "governing_addendum", "source_citation",
+        "addenda_reconciled", "unresolved_conflicts", "final_submit", "agent_signed",
+    }),
+    "automation": frozenset({
+        "status", "idempotency_key", "dry_run", "network", "paid_calls",
+        "external_write", "attempt",
+    }),
+}
+
 
 def _nonempty(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
@@ -44,6 +67,21 @@ def validate(kind: str, record: dict) -> list[str]:
     status = record.get("status")
     if not isinstance(status, str) or status not in ALLOWED_STATUSES:
         reasons.append("agent-produced status must be DRAFT, BLOCKED or NEEDS_HUMAN_REVIEW")
+
+    expected = EXPECTED_FIELDS.get(kind) if isinstance(kind, str) else None
+    if expected is not None:
+        for key in record:
+            if not isinstance(key, str) or (key not in expected and key not in UNAUTHORIZED_AGENT_FLAGS):
+                reasons.append(f"unrecognized metadata field: {key!r}")
+    # Missing explicit 'no action' flags are not equivalent to denying the action.
+    if kind == "heavybid":
+        for key in ("production_import", "price_approved_by_agent"):
+            if record.get(key) is not False:
+                reasons.append(f"must explicitly deny {key}")
+    if kind == "tender":
+        for key in ("final_submit", "agent_signed"):
+            if record.get(key) is not False:
+                reasons.append(f"must explicitly deny {key}")
 
     for key in sorted(UNAUTHORIZED_AGENT_FLAGS.intersection(record)):
         # A false explicit acknowledgement is allowed; any other claimed approval is not.
