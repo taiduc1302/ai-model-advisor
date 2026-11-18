@@ -1,6 +1,6 @@
 "use strict";
 const $ = id => document.getElementById(id);
-const task = $("task"), submit = $("submit"), error = $("form-error");
+const task = $("task"), submit = $("submit"), error = $("form-error"), requestStatus = $("request-status");
 let current = null;
 let currentToken = null;
 const example = "Audit my Python repository, investigate why integration tests fail, implement a safe fix, and verify the test suite.";
@@ -23,23 +23,23 @@ function render(response){
  $("escalation-sub").textContent=details(d.escalation)||"Follow the escalation instructions below.";
  fill("triggers",d.escalation_triggers||[]);fill("evidence",d.personal_evidence||[]);fill("notes",d.decision_notes||[]);
  $("analysis-date").textContent="REGISTRY · "+d.registry_as_of;
- $("results").scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+ requestStatus.textContent="";$("primary-name").focus({preventScroll:true});$("results").scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
 }
-function showError(message){error.textContent=message;error.hidden=false}
-task.addEventListener("input",()=>{$("char-count").textContent=task.value.length.toLocaleString()+" / 6,000";error.hidden=true});
+function showError(message){error.textContent=message;error.hidden=false;error.focus()}
+task.addEventListener("input",()=>{$("char-count").textContent=task.value.length.toLocaleString()+" / 6,000";error.hidden=true;task.removeAttribute("aria-invalid")});
 $("example").addEventListener("click",()=>{task.value=example;task.dispatchEvent(new Event("input"));task.focus()});
 submit.addEventListener("click",async()=>{
  const value=task.value.trim();
- if(!value){showError("Tell us what you need help with first.");task.focus();return}
- error.hidden=true;submit.disabled=true;submit.textContent="Finding your best configuration…";
+ if(!value){task.setAttribute("aria-invalid","true");showError("Tell us what you need help with first.");task.focus();return}
+ error.hidden=true;submit.disabled=true;$("submit-label").textContent="Finding...";requestStatus.textContent="Finding your best configuration...";$("empty").hidden=true;$("results").hidden=true;
  try{
   const priority=document.querySelector('input[name="priority"]:checked').value;
   const response=await fetch("/api/decide",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({task:value,provider:$("provider").value,priority})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||"Recommendation unavailable.");
   render(data);
- }catch(e){showError(e.message||"Something went wrong. Try again.")}
- finally{submit.disabled=false;submit.replaceChildren();submit.textContent="✦  Find best configuration  →"}
+ }catch(e){requestStatus.textContent="";$("empty").hidden=false;showError(e.message||"Something went wrong. Try again.")}
+ finally{submit.disabled=false;$("submit-label").textContent="Find best configuration"}
 });
 $("copy").addEventListener("click",async()=>{
  if(!current)return;
