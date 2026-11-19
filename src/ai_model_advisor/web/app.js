@@ -22,8 +22,8 @@ function render(response){
  $("escalation-name").textContent=d.escalation?.label||"Raise effort / review";
  $("escalation-sub").textContent=details(d.escalation)||"Follow the escalation instructions below.";
  fill("triggers",d.escalation_triggers||[]);fill("evidence",d.personal_evidence||[]);fill("notes",d.decision_notes||[]);
- $("analysis-date").textContent="REGISTRY · "+d.registry_as_of;
- $("results").scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});
+ $("analysis-date").textContent="REGISTRY · "+d.registry_as_of;$("loading").hidden=true;
+ $("results").scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});$("primary-name").focus({preventScroll:true});
 }
 function showError(message){error.textContent=message;error.hidden=false}
 task.addEventListener("input",()=>{$("char-count").textContent=task.value.length.toLocaleString()+" / 6,000";error.hidden=true});
@@ -31,14 +31,14 @@ $("example").addEventListener("click",()=>{task.value=example;task.dispatchEvent
 submit.addEventListener("click",async()=>{
  const value=task.value.trim();
  if(!value){showError("Tell us what you need help with first.");task.focus();return}
- error.hidden=true;submit.disabled=true;submit.textContent="Finding your best configuration…";
+ error.hidden=true;submit.disabled=true;submit.textContent="Finding your best configuration…";$("loading").hidden=false;$("empty").hidden=true;$("results").hidden=true;current=null;currentToken=null;
  try{
   const priority=document.querySelector('input[name="priority"]:checked').value;
   const response=await fetch("/api/decide",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({task:value,provider:$("provider").value,priority})});
   const data=await response.json();
   if(!response.ok)throw new Error(data.error||"Recommendation unavailable.");
   render(data);
- }catch(e){showError(e.message||"Something went wrong. Try again.")}
+ }catch(e){$("loading").hidden=true;$("empty").hidden=false;$("results").hidden=true;showError(e.message||"Something went wrong. Try again.")}
  finally{submit.disabled=false;submit.replaceChildren();submit.textContent="✦  Find best configuration  →"}
 });
 $("copy").addEventListener("click",async()=>{
