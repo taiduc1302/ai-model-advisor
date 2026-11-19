@@ -20,9 +20,35 @@ python -m pip install -e .
 ai-model-advisor-web
 ```
 
-Open **http://127.0.0.1:8765** on the same computer. Enter your task, choose Balanced / Quality / Cost / Speed, optionally filter the provider, and select **Find best configuration**. The page offers a primary suggestion, a qualifying lower-cost alternative when available, escalation guidance, and tradeoff notes. After doing the work separately, you can save feedback locally; the app does not automatically run a paid model or store your task description as feedback.
+Open **http://127.0.0.1:8765** on the same computer (the server is loopback-only). No account or provider API key is needed to explore recommendations.
 
-**What isn't included:** hosted public SaaS, account login, actual live model execution by clicking the recommendation, or a completed browser QA sign-off. See [Web UX](docs/WEB_UX.md).
+### 60-second walkthrough
+
+1. **Describe a task.** Example: "Review my Python repository, identify why the integration tests fail, propose a safe fix and explain how to verify it."
+2. **Choose a priority.** Balanced, Quality, Cost or Speed. Optionally limit the provider.
+3. **Find best configuration.** Inspect the **primary suggestion**, its reasoning effort and execution mode. The app also explains a lower-priced fallback *when one qualifies*, escalation guidance and personal evidence.
+4. **Run the work in your own AI tool.** The Advisor recommends a configuration; this button does **not** execute a model.
+5. **Optionally record what happened.** Select success, partial success or failure, and enter time/cost if known. The feedback record contains configuration and metrics, not the task's original text.
+
+### How the recommendation loop works
+
+```mermaid
+flowchart TD
+    A["Describe task"] --> B["Select priority and provider"]
+    B --> C["Local advisor: registry + workload heuristics"]
+    C --> D["Primary recommendation"]
+    C --> E["Qualified cheaper alternative, if any"]
+    C --> F["Escalation guidance"]
+    D --> G["Run the work separately"]
+    E --> G
+    F --> G
+    G --> H["Optional: record actual outcome locally"]
+    H -. "Evidence for later decisions" .-> C
+```
+
+**Interpret the result correctly:** The displayed routing score and heuristic confidence are **not** a measured success rate or a guarantee of quality, cost or speed. Registry information may be newer or older than the underlying benchmark evidence; actual provider performance must be verified separately.
+
+**Not included:** public SaaS hosting, account login, automatic model execution from the web UI, or a completed browser QA sign-off. See [Web UX](docs/WEB_UX.md) and [Feedback UX](docs/FEEDBACK_UX.md).
 
 It separates three decisions that are often mixed together:
 
@@ -107,8 +133,7 @@ See `MIGRATION.md` for extraction decisions and remaining cleanup.
 
 ## Freshness monitoring
 
-The scheduled **Model Registry Monitor** checks only official provider sources
-once per day. It carries a source-signal baseline forward through GitHub Actions
+The **Model Registry Monitor** workflow is configured for weekly checks of official provider sources (subject to GitHub repository settings); it is not evidence that a scan has actually run. It carries a source-signal baseline forward through GitHub Actions
 cache, publishes a Markdown/JSON report, and fails only when a newly observed
 unregistered model-like signal appears on a source that already has history.
 A changed webpage fingerprint alone is not treated as proof that a model changed.
@@ -219,7 +244,10 @@ ai-model-advisor record-decision \
 `record-decision` records the Primary model, effort, and execution mode exactly
 as emitted by the saved decision. It also reuses the dominant task category
 from the decision profile unless `--task-category` is supplied explicitly.
-\n## Offline task evaluation\n\nRun `python -m ai_model_advisor.evaluation` for curated task-profile expectations. This is not empirical model performance measurement. See `docs/EVALUATION_PROTOCOL.md`.\n
+## Offline task evaluation
+
+Run `python -m ai_model_advisor.evaluation` for curated task-profile expectations. This is not empirical model performance measurement. See `docs/EVALUATION_PROTOCOL.md`.
+
 ## Controlled experiments
 
 Freeze and validate a counterbalanced experiment before collecting real provider results. See [Controlled Experiment Protocol](docs/CONTROLLED_EXPERIMENT_PROTOCOL.md). No automatic model execution or routing promotion.
