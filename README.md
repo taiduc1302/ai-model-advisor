@@ -1,6 +1,28 @@
 # AI Model Advisor
 
-AI Model Advisor is a standalone, evidence-driven system for choosing and validating AI model configurations for real workloads.
+**Choose an AI model, reasoning effort and execution mode for a task, then learn from the actual outcome.** AI Model Advisor is a local-first, evidence-driven Python project with a small web UI and CLI. Its recommendations are heuristic; they are not calibrated success probabilities or proof that a model will succeed.
+
+## Screenshots — local web UI
+
+<table>
+<tr><td align="center"><strong>Describe a task and select priorities</strong></td><td align="center"><strong>Review the suggested configuration</strong></td></tr>
+<tr><td><img src="docs/media/advisor-home.webp" alt="AI Model Advisor dark desktop interface, with task description, priority controls, and provider selection" width="520"></td><td><img src="docs/media/advisor-recommendation.webp" alt="AI Model Advisor recommendation example with model, score, fallback, escalation, and explanation" width="520"></td></tr>
+</table>
+
+**Image provenance:** Browser-rendered screenshots of the **`main` UI baseline** at `7a8056bad3dbd76ec5c6ea3592c47c3140cd1743`, captured in an isolated Chromium environment using *synthetic example API data*. The images demonstrate the interface layout, not a live provider benchmark or a fully verified packaged build. Baseline display/accessibility issues are being handled separately in [PR #25](https://github.com/taiduc1302/ai-model-advisor/pull/25). Screenshots can therefore differ from newer pending UX work.
+
+## Try the web interface locally
+
+Requires Python 3.11+:
+
+```bash
+python -m pip install -e .
+ai-model-advisor-web
+```
+
+Open **http://127.0.0.1:8765** on the same computer. Enter your task, choose Balanced / Quality / Cost / Speed, optionally filter the provider, and select **Find best configuration**. The page offers a primary suggestion, a qualifying lower-cost alternative when available, escalation guidance, and tradeoff notes. After doing the work separately, you can save feedback locally; the app does not automatically run a paid model or store your task description as feedback.
+
+**What isn't included:** hosted public SaaS, account login, actual live model execution by clicking the recommendation, or a completed browser QA sign-off. See [Web UX](docs/WEB_UX.md).
 
 It separates three decisions that are often mixed together:
 
