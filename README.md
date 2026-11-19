@@ -2,12 +2,23 @@
 
 **Choose an AI model, reasoning effort and execution mode for a task, then learn from the actual outcome.** AI Model Advisor is a local-first, evidence-driven Python project with a small web UI and CLI. Its recommendations are heuristic; they are not calibrated success probabilities or proof that a model will succeed.
 
+## See the workflow
+
+![An illustration of AI Model Advisor's local three-step workflow: describe a task, inspect a heuristic model recommendation, and optionally record an outcome. All values are fictional.](docs/media/ui-walkthrough.svg)
+
+*Illustration only — fictional model names, scores and metrics; this is not a live model execution, recorded video or benchmark.*
+
 ## Screenshots — local web UI
 
-<table>
-<tr><td align="center"><strong>Describe a task and select priorities</strong></td><td align="center"><strong>Review the suggested configuration</strong></td></tr>
-<tr><td><img src="docs/media/advisor-home.webp" alt="AI Model Advisor dark desktop interface, with task description, priority controls, and provider selection" width="520"></td><td><img src="docs/media/advisor-recommendation.webp" alt="AI Model Advisor recommendation example with model, score, fallback, escalation, and explanation" width="520"></td></tr>
-</table>
+**1. Task input and preferences**
+
+<a href="docs/media/advisor-home.webp"><img src="docs/media/advisor-home.webp" alt="Dark desktop UI with a task entry area, optimization priority controls and provider selector." width="560"></a>
+
+**2. Example primary recommendation**
+
+<a href="docs/media/advisor-recommendation.webp"><img src="docs/media/advisor-recommendation.webp" alt="Cropped recommendation screenshot showing a synthetic primary model suggestion and its score." width="560"></a>
+
+The recommendation screenshot is **cropped**; it does not show the complete fallback, escalation and feedback sections. The [workflow diagram above](docs/media/ui-walkthrough.svg) explains those parts, using fictional values.
 
 **Image provenance:** Browser-rendered screenshots of the **`main` UI baseline** at `7a8056bad3dbd76ec5c6ea3592c47c3140cd1743`, captured in an isolated Chromium environment using *synthetic example API data*. The images demonstrate the interface layout, not a live provider benchmark or a fully verified packaged build. Baseline display/accessibility issues are being handled separately in [PR #25](https://github.com/taiduc1302/ai-model-advisor/pull/25). Screenshots can therefore differ from newer pending UX work.
 
