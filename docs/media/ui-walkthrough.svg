@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1080" height="560" viewBox="0 0 1080 560" role="img" aria-labelledby="title desc">
+<title id="title">AI Model Advisor: describe, decide, learn</title>
+<desc id="desc">Illustrated local workflow with fictional data: enter a task and select priorities, review a heuristic recommendation with fallback and escalation, then optionally record outcome and cost. No model execution is implied.</desc>
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1120"/><stop offset="1" stop-color="#131b30"/></linearGradient>
+  <linearGradient id="purple" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#7464ec"/><stop offset="1" stop-color="#574cce"/></linearGradient>
+  <style>
+    text{font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+    .muted{fill:#aab8d0}.title{fill:#f2f2ff;font-size:25px;font-weight:800}.step{fill:#b9afff;font-size:13px;font-weight:800;letter-spacing:1px}.label{fill:#edf0ff;font-size:16px;font-weight:700}.small{fill:#bac7df;font-size:12px}.tiny{fill:#aab8d0;font-size:11px}.white{fill:#fff;font-weight:700}.pill{fill:#c9c4ff;font-size:11px;font-weight:700}
+  </style>
+</defs>
+<rect width="1080" height="560" fill="url(#bg)" rx="18"/>
+<rect x="31" y="30" width="34" height="34" rx="9" fill="#6757ea"/><text x="48" y="53" fill="#fff" font-size="22" text-anchor="middle">*</text>
+<text x="81" y="53" class="title">From task to evidence</text>
+<text x="1045" y="51" text-anchor="end" class="step">AI MODEL ADVISOR  |  LOCAL MODE</text>
+<g stroke="#364561" stroke-width="1" fill="#121d30">
+  <rect x="33" y="99" width="317" height="402" rx="16"/>
+  <rect x="383" y="99" width="317" height="402" rx="16"/>
+  <rect x="733" y="99" width="314" height="402" rx="16"/>
+</g>
+<circle cx="61" cy="126" r="15" fill="#3d3869"/><text x="61" y="131" text-anchor="middle" class="pill">1</text>
+<text x="87" y="131" class="step">DESCRIBE</text>
+<text x="56" y="171" class="label">What do you need to do?</text>
+<rect x="55" y="192" width="273" height="109" rx="8" fill="#0d1728" stroke="#344966"/>
+<text x="70" y="216" class="small">Review my Python repository,</text>
+<text x="70" y="236" class="small">find failing tests, propose a fix,</text>
+<text x="70" y="256" class="small">and explain verification steps.</text>
+<text x="55" y="329" class="step">OPTIMIZE FOR</text>
+<rect x="55" y="340" width="83" height="32" rx="6" fill="#4a467e"/><text x="96" y="361" text-anchor="middle" class="pill">Balanced</text>
+<text x="152" y="361" class="small">Quality</text><text x="219" y="361" class="small">Cost</text><text x="271" y="361" class="small">Speed</text>
+<rect x="55" y="397" width="273" height="47" rx="8" fill="url(#purple)"/>
+<text x="191" y="426" fill="#fff" text-anchor="middle" font-size="14" font-weight="700">Find best configuration</text>
+<path d="M358 295h18m-7 -7 7 7-7 7" stroke="#a49bff" stroke-width="2" fill="none"/>
+<circle cx="411" cy="126" r="15" fill="#3d3869"/><text x="411" y="131" text-anchor="middle" class="pill">2</text>
+<text x="437" y="131" class="step">DECIDE</text>
+<text x="406" y="171" class="label">Review the recommendation</text>
+<rect x="405" y="191" width="273" height="145" rx="10" fill="#1e254c" stroke="#5b568f"/>
+<text x="421" y="217" class="step">PRIMARY SUGGESTION</text>
+<text x="421" y="247" fill="#f7f6ff" font-size="21" font-weight="800">Example Model A</text>
+<text x="421" y="270" class="small">High reasoning | direct API</text>
+<rect x="420" y="283" width="245" height="1" fill="#485075"/>
+<text x="421" y="306" class="small">Heuristic confidence: 71%</text>
+<text x="406" y="362" class="label">Cheaper alternative (if qualified)</text>
+<text x="406" y="385" class="small">Example Model B | lower list price</text>
+<text x="406" y="419" class="label">Escalation guidance</text>
+<text x="406" y="442" class="small">Review exceptions and uncertainty</text>
+<path d="M708 295h18m-7 -7 7 7-7 7" stroke="#a49bff" stroke-width="2" fill="none"/>
+<circle cx="761" cy="126" r="15" fill="#3d3869"/><text x="761" y="131" text-anchor="middle" class="pill">3</text>
+<text x="787" y="131" class="step">LEARN</text>
+<text x="756" y="171" class="label">Use it, then record the result</text>
+<text x="756" y="207" class="small">You run the actual model separately.</text>
+<text x="756" y="240" class="step">OUTCOME</text>
+<rect x="756" y="252" width="268" height="39" rx="7" fill="#0d1728" stroke="#344966"/>
+<text x="769" y="277" class="small">Success  |  Partial  |  Failure</text>
+<text x="756" y="322" class="step">OPTIONAL METRICS</text>
+<rect x="756" y="337" width="126" height="40" rx="7" fill="#0d1728" stroke="#344966"/>
+<rect x="895" y="337" width="129" height="40" rx="7" fill="#0d1728" stroke="#344966"/>
+<text x="769" y="362" class="small">Time: 120 sec</text><text x="908" y="362" class="small">Cost: $0.25</text>
+<rect x="756" y="398" width="268" height="45" rx="8" fill="#27395d" stroke="#485877"/>
+<text x="890" y="426" fill="#eae6ff" text-anchor="middle" font-size="14" font-weight="700">Save feedback locally</text>
+<text x="540" y="526" text-anchor="middle" class="tiny">ILLUSTRATIVE WORKFLOW  |  FICTIONAL MODELS AND METRICS  |  NOT A LIVE MODEL BENCHMARK</text>
+</svg>
