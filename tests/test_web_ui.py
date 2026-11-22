@@ -111,3 +111,17 @@ def test_oversized_post_is_rejected(local_server):
         "priority": "balanced",
     })
     assert status == 413
+
+
+def test_design_reference_contract_in_existing_web_suite():
+    """Execute the new UX contract as part of the existing, CI-selected web lane.
+
+    CI explicitly runs tests/test_web_ui.py. Keep the separate focused test file
+    discoverable without depending on GitHub Actions or a browser driver here.
+    """
+    from pathlib import Path
+    from runpy import run_path
+
+    checks = run_path(str(Path(__file__).with_name("test_design_reference_ux.py")))
+    checks["test_decision_comparison_semantics_and_no_duplicate_ids"]()
+    checks["test_comparison_is_local_text_only_and_uses_no_new_api"]()
